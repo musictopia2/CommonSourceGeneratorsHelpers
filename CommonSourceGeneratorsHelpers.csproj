@@ -8,7 +8,7 @@
 		<ImplicitUsings>true</ImplicitUsings>
 		<Version>1.0.1</Version>
 		<Authors>musictopia</Authors>
-		<PackageProjectUrl></PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/musictopia2/CommonSourceGeneratorsHelpers</PackageProjectUrl>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
