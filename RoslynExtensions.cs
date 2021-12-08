@@ -210,8 +210,9 @@ public static class RoslynExtensions
             }
             return output;
         }
-        if (attribute.ConstructorArguments.Count() == 0)
+        if (attribute.ConstructorArguments.Count() - 1 < property.Index)
         {
+            //i think best to do this way so if there are more than one required, won't also cause problems.
             return default;
         }
         output = (T?)attribute.ConstructorArguments[property.Index].Value;
