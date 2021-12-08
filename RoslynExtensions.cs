@@ -126,13 +126,26 @@ public static class RoslynExtensions
     {
         return symbol.Type.IsSimpleType();
     }
+    public static BasicList<IPropertySymbol> GetRequiredProperties(this INamedTypeSymbol classSymbol)
+    {
+        var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.IsRequiredAttributeUsed()).ToBasicList();
+        return output;
+    }
+    public static BasicList<IPropertySymbol> GetPropertiesWithAttribute(this INamedTypeSymbol classSymbol, string attributeName)
+    {
+        var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
+        return output;
+    }
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol) => symbol.GetMembers().OfType<IPropertySymbol>().ToBasicList();
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol, Func<IPropertySymbol, bool> predicate) => symbol.GetMembers().OfType<IPropertySymbol>().Where(predicate).ToBasicList();
     public static bool TryGetAttribute(this ISymbol symbol, string attributeName, out IEnumerable<AttributeData> attributes)
     {
-        string otherName = attributeName.Replace("Attribute", "");
+        if (attributeName.EndsWith("Attribute") == false)
+        {
+            attributeName = $"{attributeName}Attribute";
+        }
         attributes = symbol.GetAttributes()
-            .Where(a => a.AttributeClass is not null && (a.AttributeClass.Name == attributeName || a.AttributeClass.Name == otherName));
+            .Where(a => a.AttributeClass is not null && a.AttributeClass.Name == attributeName);
         return attributes.Any();
     }
     public static bool TryGetAttribute(this ISymbol symbol, INamedTypeSymbol attributeType, out IEnumerable<AttributeData> attributes)
@@ -151,9 +164,12 @@ public static class RoslynExtensions
     }
     public static bool HasAttribute(this ISymbol symbol, string attributeName)
     {
-        string otherName = attributeName.Replace("Attribute", "");
+        if (attributeName.EndsWith("Attribute") == false)
+        {
+            attributeName = $"{attributeName}Attribute";
+        }
         return symbol.GetAttributes()
-            .Any(a => a.AttributeClass is not null && (a.AttributeClass.Name == attributeName || a.AttributeClass.Name == otherName));
+            .Any(a => a.AttributeClass is not null && a.AttributeClass.Name == attributeName);
     }
     /// <summary>
     /// This gets the data of the property.  null means not found.
