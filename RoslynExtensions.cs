@@ -210,6 +210,10 @@ public static class RoslynExtensions
             }
             return output;
         }
+        if (attribute.ConstructorArguments.Count() == 0)
+        {
+            return default;
+        }
         output = (T?)attribute.ConstructorArguments[property.Index].Value;
         return output;
     }
