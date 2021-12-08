@@ -253,4 +253,69 @@ public static class RoslynExtensions
         string finalName = $"{nexts}.{fileName}.g";
         return finalName;
     }
+    public static BasicList<ClassDeclarationSyntax> GetClasses(this SyntaxTree tree)
+    {
+        var unit = tree.GetCompilationUnitRoot();
+        var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
+        if (firsts.Count == 0)
+        {
+            return new();
+        }
+        if (firsts.Count > 1)
+        {
+            return new();
+        }
+        return firsts.Single().Members.OfType<ClassDeclarationSyntax>().ToBasicList();
+    }
+    /// <summary>
+    /// This gets all the members of a certain type from the syntax tree after the filescope namespace.  
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    public static BasicList<T> GetMembersOfSpecificType<T>(this SyntaxTree tree)
+    {
+        var unit = tree.GetCompilationUnitRoot();
+        var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
+        if (firsts.Count == 0)
+        {
+            return new();
+        }
+        if (firsts.Count > 1)
+        {
+            return new();
+        }
+        return firsts.Single().Members.OfType<T>().ToBasicList();
+    }
+    /// <summary>
+    /// this returns all members after the filescoped namespace
+    /// </summary>
+    /// <param name="tree"></param>
+    /// <returns></returns>
+    public static BasicList<MemberDeclarationSyntax> GetAllMembers(this SyntaxTree tree)
+    {
+        var unit = tree.GetCompilationUnitRoot();
+        var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
+        if (firsts.Count == 0)
+        {
+            return new();
+        }
+        if (firsts.Count > 1)
+        {
+            return new();
+        }
+        return firsts.Single().Members.ToBasicList();
+    }
+    public static string AppendCodeText(this ClassDeclarationSyntax ourClass, string syntaxText, string additionalText)
+    {
+        string firsts = ourClass.ToString();
+        string extras = additionalText;
+        int startAt = firsts.IndexOf("{");
+        int endAt = firsts.LastIndexOf("}");
+        string toReplace = firsts.Substring(startAt, endAt - startAt - 1);
+        string newText = $"{toReplace}{extras}";
+        string results = firsts.Replace(toReplace, newText);
+        syntaxText = syntaxText.Replace(firsts, results);
+        return syntaxText;
+    }
 }
