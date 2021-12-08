@@ -198,6 +198,10 @@ public static class RoslynExtensions
         T? output;
         if (property.Index == -1)
         {
+            if (attribute.NamedArguments.Count() == 0)
+            {
+                return default;
+            }
             //this means nothing found.  so if not in named arguments, then not found.
             output = (T?)attribute.NamedArguments.FirstOrDefault(xx => xx.Key.Equals(property.Name)).Value.Value;
             if (output is null)
