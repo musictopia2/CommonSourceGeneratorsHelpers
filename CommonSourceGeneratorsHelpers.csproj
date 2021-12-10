@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<ImplicitUsings>true</ImplicitUsings>
-		<Version>1.0.6</Version>
+		<Version>1.0.7</Version>
 		<Authors>musictopia</Authors>
 		<PackageProjectUrl>https://github.com/musictopia2/CommonSourceGeneratorsHelpers</PackageProjectUrl>
 	</PropertyGroup>

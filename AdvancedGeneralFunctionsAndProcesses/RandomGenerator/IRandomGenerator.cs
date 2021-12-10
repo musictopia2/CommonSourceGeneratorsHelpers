@@ -38,9 +38,7 @@ public interface IRandomGenerator
     int NextMinute(int min = 0, int max = 59);
     int NextHour(bool twentyfourHours = true, int? min = null, int? max = null);
     int NextMillisecond();
-#if NET6_0_OR_GREATER
-    DateOnly NextDateOnly(DateOnly? min = null, DateOnly? max = null);
-#endif
+
     DateTime NextDateTime(DateTime? min = null, DateTime? max = null); 
     long NextCreditCardNumber(string? cardType = null);
     string NextGUID(int version = 5);
