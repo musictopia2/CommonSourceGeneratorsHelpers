@@ -343,4 +343,24 @@ public static class RoslynExtensions
         syntaxText = syntaxText.Replace(firsts, results);
         return syntaxText;
     }
+    //extra extensions to help with incremental source generators.
+    public static INamedTypeSymbol GetClassSymbol(this GeneratorSyntaxContext context, ClassDeclarationSyntax clazz)
+    {
+        return context.SemanticModel.GetDeclaredSymbol(clazz)!;
+    }
+    public static ClassDeclarationSyntax GetClassNode(this GeneratorSyntaxContext context)
+    {
+        return (ClassDeclarationSyntax)context.Node;
+    }
+    public static bool IsPublic(this ClassDeclarationSyntax clazz)
+    {
+        foreach (var m in clazz.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.PublicKeyword))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
