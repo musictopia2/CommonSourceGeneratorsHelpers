@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<ImplicitUsings>true</ImplicitUsings>
-		<Version>2.0.1</Version>
+		<Version>2.0.3</Version>
 		<Authors>musictopia</Authors>
 		<PackageProjectUrl>https://github.com/musictopia2/CommonSourceGeneratorsHelpers</PackageProjectUrl>
 	</PropertyGroup>
@@ -14,8 +14,8 @@
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="ContextMasterHelpers" Version="1.0.1" PrivateAssets="all" />
-		<PackageReference Include="GenerateHelperLibraries" Version="2.0.1" PrivateAssets="all" />
+		<PackageReference Include="ContextMasterHelpers" Version="1.0.2" PrivateAssets="all" />
+		<PackageReference Include="GenerateHelperLibraries" Version="2.0.3" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all" />
 	</ItemGroup>
