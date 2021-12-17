@@ -136,6 +136,7 @@ public static class RoslynExtensions
         var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
         return output;
     }
+    
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol) => symbol.GetMembers().OfType<IPropertySymbol>().ToBasicList();
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol, Func<IPropertySymbol, bool> predicate) => symbol.GetMembers().OfType<IPropertySymbol>().Where(predicate).ToBasicList();
     public static bool TryGetAttribute(this ISymbol symbol, string attributeName, out IEnumerable<AttributeData> attributes)
@@ -362,5 +363,54 @@ public static class RoslynExtensions
             }
         }
         return false;
+    }
+    //new extensions.  this helps with getting all public properties and methods.
+    private static IEnumerable<INamedTypeSymbol> GetAllParents(this INamedTypeSymbol symbol)
+    {
+        BasicList<INamedTypeSymbol> output = new();
+        output.Add(symbol);
+        INamedTypeSymbol temps = symbol;
+        do
+        {
+            if (temps.BaseType is null)
+            {
+                return output;
+            }
+            temps = temps.BaseType;
+            if (temps.Name == "Object")
+            {
+                return output;
+            }
+            output.Add(temps);
+        } while (true);
+    }
+    public static BasicList<IPropertySymbol> GetAllPublicProperties(this INamedTypeSymbol symbol)
+    {
+        //since everything goes back to object, once something inherits from object, then that is all of them.
+        //also, since the inheritance is only single inheritance, then should be okay.
+        var symbols = symbol.GetAllParents();
+        BasicList<IPropertySymbol> output = new();
+        foreach (var s in symbols)
+        {
+            var list = s.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public);
+            output.AddRange(list);
+        }
+        return output;
+    }
+    public static BasicList<IPropertySymbol> GetAllPublicProperties(this INamedTypeSymbol classSymbol, string attributeName) //this means if i have attribute, hopefully its obvious i only want properties with specific attribute.
+    {
+        var output = classSymbol.GetAllPublicProperties().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
+        return output;
+    }
+    public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol)
+    {
+        var symbols = symbol.GetAllParents();
+        BasicList<IMethodSymbol> output = new();
+        foreach (var s in symbols)
+        {
+            var list = s.GetMembers().OfType<IMethodSymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public && xx.MethodKind == MethodKind.Ordinary);
+            output.AddRange(list);
+        }
+        return output;
     }
 }
