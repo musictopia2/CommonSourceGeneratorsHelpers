@@ -349,6 +349,10 @@ public static class RoslynExtensions
     {
         return context.SemanticModel.GetDeclaredSymbol(clazz)!;
     }
+    public static INamedTypeSymbol GetRecordSymbol(this GeneratorSyntaxContext context, RecordDeclarationSyntax record)
+    {
+        return context.SemanticModel.GetDeclaredSymbol(record)!;
+    }
     public static ClassDeclarationSyntax GetClassNode(this GeneratorSyntaxContext context)
     {
         return (ClassDeclarationSyntax)context.Node;
