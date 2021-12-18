@@ -353,6 +353,14 @@ public static class RoslynExtensions
     {
         return (ClassDeclarationSyntax)context.Node;
     }
+    public static RecordDeclarationSyntax GetRecordNode(this GeneratorSyntaxContext context)
+    {
+        return (RecordDeclarationSyntax)context.Node;
+    }
+    public static StructDeclarationSyntax GetStructNode(this GeneratorSyntaxContext context)
+    {
+        return (StructDeclarationSyntax)context.Node;
+    }
     public static bool IsPublic(this ClassDeclarationSyntax clazz)
     {
         foreach (var m in clazz.Modifiers)
@@ -361,6 +369,43 @@ public static class RoslynExtensions
             {
                 return true;
             }
+        }
+        return false;
+    }
+    public static bool IsPublic(this RecordDeclarationSyntax record)
+    {
+        foreach (var m in record.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.PublicKeyword))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static bool IsPublic(this StructDeclarationSyntax strucz)
+    {
+        foreach (var m in strucz.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.PublicKeyword))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static bool IsRecordStruct(this RecordDeclarationSyntax record)
+    {
+        if (record.IsKind(SyntaxKind.RecordStructDeclaration))
+        {
+            return true;
+        }
+        foreach (var m in record.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.RecordStructDeclaration))
+            {
+                return true;
+            }    
         }
         return false;
     }
