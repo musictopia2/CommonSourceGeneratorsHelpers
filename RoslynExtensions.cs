@@ -40,6 +40,7 @@ public static class RoslynExtensions
     {
         return structDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
     }
+   
     public static bool IsMappable(this ClassDeclarationSyntax source) => source.Implements("IMappable");
     public static bool Implements(this ClassDeclarationSyntax source, string interfaceName)
     {
@@ -392,6 +393,36 @@ public static class RoslynExtensions
         foreach (var m in strucz.Modifiers)
         {
             if (m.IsKind(SyntaxKind.PublicKeyword))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static bool IsReadOnly(this RecordDeclarationSyntax recordDeclaration)
+    {
+        if (recordDeclaration.IsKind(SyntaxKind.ReadOnlyKeyword))
+        {
+            return true;
+        }
+        foreach (var m in recordDeclaration.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.ReadOnlyKeyword))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static bool IsReadOnly(this StructDeclarationSyntax s)
+    {
+        if (s.IsKind(SyntaxKind.ReadOnlyKeyword))
+        {
+            return true;
+        }
+        foreach (var m in s.Modifiers)
+        {
+            if (m.IsKind(SyntaxKind.ReadOnlyKeyword))
             {
                 return true;
             }
