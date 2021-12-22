@@ -85,7 +85,8 @@ public static class RoslynExtensions
     {
         return symbol.Type.IsCollection();
     }
-    public static ITypeSymbol? GetCollectionSingleGenericTypeUsed(this ITypeSymbol symbol)
+    //had to rename because there can be cases like nullable where we need to get the generic type even if not a collection type.
+    public static ITypeSymbol? GetSingleGenericTypeUsed(this ITypeSymbol symbol)
     {
         INamedTypeSymbol? others = symbol as INamedTypeSymbol;
         if (others is null)
@@ -98,9 +99,9 @@ public static class RoslynExtensions
         }
         return others.TypeArguments[0];
     }
-    public static ITypeSymbol? GetCollectionSingleGenericTypeUsed(this IPropertySymbol symbol)
+    public static ITypeSymbol? GetSingleGenericTypeUsed(this IPropertySymbol symbol)
     {
-        return symbol.Type.GetCollectionSingleGenericTypeUsed();
+        return symbol.Type.GetSingleGenericTypeUsed();
     }
     public static bool IsNullable(this IPropertySymbol symbol) => symbol.Type.IsNullable();
     public static bool IsNullable(this ITypeSymbol symbol) => symbol.Name == "Nullable";
