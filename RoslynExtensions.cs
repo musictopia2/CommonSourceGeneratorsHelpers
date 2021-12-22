@@ -40,7 +40,6 @@ public static class RoslynExtensions
     {
         return structDeclaration.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
     }
-   
     public static bool IsMappable(this ClassDeclarationSyntax source) => source.Implements("IMappable");
     public static bool Implements(this ClassDeclarationSyntax source, string interfaceName)
     {
@@ -515,5 +514,11 @@ public static class RoslynExtensions
             output.AddRange(list);
         }
         return output;
+    }
+    //decided to add support for getting sematicmodel for the class its going through.  since microsoft thought it was fine to use do it that way, try that way.
+    public static SemanticModel GetSemanticModel(this SyntaxNode node, Compilation compilation)
+    {
+        var firsts = node.FirstAncestorOrSelf<CompilationUnitSyntax>();
+        return compilation.GetSemanticModel(firsts!.SyntaxTree);
     }
 }
