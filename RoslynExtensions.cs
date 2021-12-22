@@ -102,6 +102,30 @@ public static class RoslynExtensions
     {
         return symbol.Type.GetCollectionSingleGenericTypeUsed();
     }
+    public static bool IsNullable(this IPropertySymbol symbol) => symbol.Type.IsNullable();
+    public static bool IsNullable(this ITypeSymbol symbol) => symbol.Name == "Nullable";
+    public static bool IsKnownType(this IPropertySymbol symbol) => symbol.Type.IsKnownType();
+    public static bool IsKnownType(this ITypeSymbol symbol)
+    {
+        if (symbol.TypeKind == TypeKind.Enum)
+        {
+            return true;
+        }
+        if (symbol.Name.StartsWith("Enum"))
+        {
+            return true; //act like its known (no need to scan through to support my custom stuff
+        }
+        HashSet<string> names = new()
+        {
+            "String", "Nullable", "Decimal", "Byte",
+            "Double", "Int16", "Int32", "Int64",
+            "SByte", "Single", "UInt16", "UInt32",
+            "UInt64", "Boolean", "Char", "Object",
+            "Guid","DateTime", "DateTimeOffset",
+            "DateOnly", "TimeOnly"
+        };
+        return names.Contains(symbol.Name);
+    }
     public static bool IsSimpleType(this ITypeSymbol symbol)
     {
         if (symbol.Name == "String")
