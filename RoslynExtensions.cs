@@ -146,9 +146,21 @@ public static class RoslynExtensions
         {
             attributeName = $"{attributeName}Attribute";
         }
-        attributes = symbol.GetAttributes()
-            .Where(a => a.AttributeClass is not null && a.AttributeClass.Name == attributeName);
-        return attributes.Any();
+        BasicList<AttributeData> output = new();
+        foreach (var attribute in symbol.GetAttributes())
+        {
+            if (attribute.AttributeClass is null)
+            {
+                continue;
+            }
+            if(attribute.AttributeClass.Name == attributeName)
+            {
+                output.Add(attribute);
+            }
+        }
+        //trying a faster method.
+        attributes = output;
+        return output.Count > 0;
     }
     public static bool TryGetAttribute(this ISymbol symbol, INamedTypeSymbol attributeType, out IEnumerable<AttributeData> attributes)
     {
@@ -170,8 +182,19 @@ public static class RoslynExtensions
         {
             attributeName = $"{attributeName}Attribute";
         }
-        return symbol.GetAttributes()
-            .Any(a => a.AttributeClass is not null && a.AttributeClass.Name == attributeName);
+        foreach (var attribute in symbol.GetAttributes())
+        {
+            if (attribute.AttributeClass is null)
+            {
+                continue;
+            }
+            if (attribute.AttributeClass.Name == attributeName)
+            {
+                return true;
+            }
+        }
+        //trying a faster method.  because this has to be as fast as possible.
+        return false;
     }
     /// <summary>
     /// This gets the data of the property.  null means not found.
