@@ -1,18 +1,15 @@
 ﻿using System.Text;
-
 namespace CommonSourceGeneratorsHelpers;
-
-internal class SoureCodeStringBuilder
+internal class SourceCodeStringBuilder
 {
-    private const string DoubleQuote = "\""; //hopefully this simple.
-
-
+    private const string DoubleQuote = "\"";
     private const string _oneSpace = "    ";
     private const string _twoSpaces = "        ";
     private const string _threeSpaces = "            ";
     private const string _fourSpaces = "                ";
-
-
+    private const string _fiveSpaces = "                    ";
+    private const string _sixSpaces = "                        ";
+    private const string _sevenSpaces = "                            ";
     int _indentLevel = 0;
 
     //readonly StringBuilder _currentLine = new();
@@ -24,7 +21,7 @@ internal class SoureCodeStringBuilder
     /// Ensures that current cursor position is not dirty (cursor position is zero). If dirty, writes line break
     /// </summary>
     /// <returns></returns>
-    public SoureCodeStringBuilder EnsureEmptyLine()
+    public SourceCodeStringBuilder EnsureEmptyLine()
     {
         if (_needsNewLine)
         {
@@ -47,7 +44,7 @@ internal class SoureCodeStringBuilder
     /// so that the next text lines are all indented with an increased level. <br />
     /// If you're using helpers like WithIndent, WithCurlyBraces or WithPythonBlock you don't need to manually control indent level.
     /// </summary>
-    public SoureCodeStringBuilder IncreaseIndent()
+    public SourceCodeStringBuilder IncreaseIndent()
     {
         InnerIncreaseIndent();
         return this;
@@ -65,12 +62,12 @@ internal class SoureCodeStringBuilder
     /// so that the next text lines are all indented with an decreased level. <br />
     /// If you're using helpers like WithIndent, WithCurlyBraces or WithPythonBlock you don't need to manually control indent level.
     /// </summary>
-    public SoureCodeStringBuilder DecreaseIndent()
+    public SourceCodeStringBuilder DecreaseIndent()
     {
         InnerDecreaseIndent();
         return this;
     }
-    public SoureCodeStringBuilder WriteLine(Action action)
+    public SourceCodeStringBuilder WriteLine(Action action)
     {
         Indent();
         action.Invoke(); //so i can break apart what is being written.
@@ -78,15 +75,11 @@ internal class SoureCodeStringBuilder
         _needsNewLine = false;
         return this;
     }
-    public SoureCodeStringBuilder WriteLine(string text)
+    public SourceCodeStringBuilder WriteLine(string text)
     {
-        //string indent = string.Join("", _levelIndent.Reverse().ToList());
-        //string content = Indent();
-        //_builds.Append(content);
         Indent();
         _builds.AppendLine(text);
         _needsNewLine = false;
-
         return this;
     }
 
@@ -116,18 +109,24 @@ internal class SoureCodeStringBuilder
             _builds.Append(_fourSpaces);
             return;
         }
-        throw new Exception("Only 4 spaces supported at the most");
-        //StringBuilder build = new();
-        //for (int i = 0; i < _indentLevel; i++)
-        //{
-        //    build.Append(IndentString);
-        //}
-        //return build.ToString();
+        if (_indentLevel == 5)
+        {
+            _builds.Append(_fiveSpaces);
+            return;
+        }
+        if (_indentLevel == 6)
+        {
+            _builds.Append(_sixSpaces);
+        }
+        if (_indentLevel == 7)
+        {
+            _builds.Append(_sevenSpaces);
+        }
+        throw new Exception("Only 7 spaces supported at the most");
     }
-
-    public SoureCodeStringBuilder Write(object obj)
+    public SourceCodeStringBuilder Write(object obj)
     {
-        _needsNewLine = true; //i think.  otherwise, would do somewhere else.
+        _needsNewLine = true;
         _builds.Append(obj);
         return this;
     }
@@ -136,26 +135,31 @@ internal class SoureCodeStringBuilder
         return _builds.ToString();
     }
     #region Custom Stuff
-    public SoureCodeStringBuilder StartBlock()
+    public SourceCodeStringBuilder StartBlock()
     {
         Indent();
         Write("{")
             .IncreaseIndent().EnsureEmptyLine();
         return this;
     }
-    public SoureCodeStringBuilder EndBlock()
+    public SourceCodeStringBuilder EndBlock(bool alsoBlankLine = false)
     {
         DecreaseIndent().EnsureEmptyLine();
         Indent();
         Write("}");
+        if (alsoBlankLine)
+        {
+            _builds.AppendLine();
+        }
         return this;
     }
-    public SoureCodeStringBuilder AppendDoubleQuote(Action action)
+    public SourceCodeStringBuilder AppendDoubleQuote(Action action)
     {
         Write(DoubleQuote);
         action.Invoke();
         Write(DoubleQuote);
         return this;
     }
+    
     #endregion
 }
