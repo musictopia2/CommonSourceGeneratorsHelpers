@@ -151,6 +151,16 @@ public static class RoslynExtensions
     {
         return symbol.Type.IsSimpleType();
     }
+    public static BasicList<IPropertySymbol> GetRequiredProperties(this ITypeSymbol classSymbol)
+    {
+        var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.IsRequiredAttributeUsed()).ToBasicList();
+        return output;
+    }
+    public static BasicList<IPropertySymbol> GetPropertiesWithAttribute(this ITypeSymbol classSymbol, string attributeName)
+    {
+        var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
+        return output;
+    }
     public static BasicList<IPropertySymbol> GetRequiredProperties(this INamedTypeSymbol classSymbol)
     {
         var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.IsRequiredAttributeUsed()).ToBasicList();
@@ -161,7 +171,9 @@ public static class RoslynExtensions
         var output = classSymbol.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
         return output;
     }
-    
+    public static BasicList<IPropertySymbol> GetProperties(this ITypeSymbol symbol) => symbol.GetMembers().OfType<IPropertySymbol>().ToBasicList();
+    public static BasicList<IPropertySymbol> GetProperties(this ITypeSymbol symbol, Func<IPropertySymbol, bool> predicate) => symbol.GetMembers().OfType<IPropertySymbol>().Where(predicate).ToBasicList();
+
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol) => symbol.GetMembers().OfType<IPropertySymbol>().ToBasicList();
     public static BasicList<IPropertySymbol> GetProperties(this INamedTypeSymbol symbol, Func<IPropertySymbol, bool> predicate) => symbol.GetMembers().OfType<IPropertySymbol>().Where(predicate).ToBasicList();
     public static bool TryGetAttribute(this ISymbol symbol, string attributeName, out IEnumerable<AttributeData> attributes)
@@ -511,6 +523,11 @@ public static class RoslynExtensions
             output.Add(temps);
         } while (true);
     }
+    public static BasicList<IPropertySymbol> GetAllPublicProperties(this ITypeSymbol symbol)
+    {
+        INamedTypeSymbol other = (INamedTypeSymbol)symbol;
+        return other.GetAllPublicProperties();
+    }
     public static BasicList<IPropertySymbol> GetAllPublicProperties(this INamedTypeSymbol symbol)
     {
         //since everything goes back to object, once something inherits from object, then that is all of them.
@@ -524,10 +541,20 @@ public static class RoslynExtensions
         }
         return output;
     }
+    public static BasicList<IPropertySymbol> GetAllPublicProperties(this ITypeSymbol symbol, string attributeName)
+    {
+        INamedTypeSymbol other = (INamedTypeSymbol)symbol;
+        return other.GetAllPublicProperties(attributeName);
+    }
     public static BasicList<IPropertySymbol> GetAllPublicProperties(this INamedTypeSymbol classSymbol, string attributeName) //this means if i have attribute, hopefully its obvious i only want properties with specific attribute.
     {
         var output = classSymbol.GetAllPublicProperties().Where(xx => xx.HasAttribute(attributeName)).ToBasicList();
         return output;
+    }
+    public static BasicList<IMethodSymbol> GetAllPublicMethods(this ITypeSymbol symbol, string attributeName)
+    {
+        INamedTypeSymbol other = (INamedTypeSymbol)symbol;
+        return other.GetAllPublicMethods(attributeName);
     }
     public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol)
     {
@@ -546,4 +573,5 @@ public static class RoslynExtensions
         var firsts = node.FirstAncestorOrSelf<CompilationUnitSyntax>();
         return compilation.GetSemanticModel(firsts!.SyntaxTree);
     }
+    public static string GetStringFromList(this IEnumerable<string> list) => string.Join(Environment.NewLine, list);
 }
