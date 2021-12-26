@@ -4,6 +4,7 @@ public interface IWriter
 {
     IWriter Write(object obj);
     IWriter AppendDoubleQuote(Action<IWriter> action);
+    public string WriteSingleText(Action<IWriter> action);
 }
 public interface ICodeBlock
 {
@@ -11,6 +12,7 @@ public interface ICodeBlock
     ICodeBlock WriteLine(Action<IWriter> action);
     ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false, bool alsoBlankLine = false);
     ICodeBlock AppendEmptyLine();
+    public string WriteSingleText(Action<IWriter> action);
 }
 public class SourceCodeStringBuilder : IWriter, ICodeBlock
 {
@@ -87,6 +89,14 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         _builds.AppendLine();
         _needsNewLine = false;
         return this;
+    }
+    public string WriteSingleText(Action<IWriter> action)
+    {
+        //will not even indent.
+        SourceCodeStringBuilder others = new();
+        action.Invoke(others);
+        string results = others.ToString();
+        return results;
     }
     public SourceCodeStringBuilder WriteLine(string text)
     {
