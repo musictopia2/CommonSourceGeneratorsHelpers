@@ -4,14 +4,15 @@ public interface IWriter
 {
     IWriter Write(object obj);
     IWriter AppendDoubleQuote(Action<IWriter> action);
+    IWriter AppendDoubleQuote(object obj);
+    IWriter AppendDoubleQuote(); //this means nothing.
     public string GetSingleText(Action<IWriter> action);
 }
 public interface ICodeBlock
 {
     ICodeBlock WriteLine(string text);
     ICodeBlock WriteLine(Action<IWriter> action);
-    ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false, bool alsoBlankLine = false);
-    ICodeBlock AppendEmptyLine();
+    ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false);
     public string GetSingleText(Action<IWriter> action);
 }
 public class SourceCodeStringBuilder : IWriter, ICodeBlock
@@ -84,6 +85,7 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
     }
     public SourceCodeStringBuilder WriteLine(Action<IWriter> action)
     {
+        EnsureEmptyLine(); //hopefully this simple.
         Indent();
         action.Invoke(this); //so i can break apart what is being written.
         _builds.AppendLine();
@@ -100,12 +102,12 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
     }
     public SourceCodeStringBuilder WriteLine(string text)
     {
+        EnsureEmptyLine(); //hopefuly this simple.
         Indent();
         _builds.AppendLine(text);
         _needsNewLine = false;
         return this;
     }
-
     private void Indent()
     {
         if (_indentLevel == 0)
@@ -169,13 +171,15 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         return _builds.ToString();
     }
     #region Custom Stuff
-    public SourceCodeStringBuilder WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false, bool alsoBlankLine = false)
+    //private bool _wasBlock;
+    public SourceCodeStringBuilder WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false)
     {
+        //_wasBlock = true;
         StartBlock();
         action.Invoke(this);
         if (endSemi == false)
         {
-            EndBlock(alsoBlankLine);
+            EndBlock();
             return this;
         }
         DecreaseIndent().EnsureEmptyLine();
@@ -209,30 +213,43 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         Write(DoubleQuote);
         return this;
     }
+    public SourceCodeStringBuilder AppendDoubleQuote(object obj)
+    {
+        Write(DoubleQuote).Write(obj).Write(DoubleQuote);
+        return this;
+    }
+    public SourceCodeStringBuilder AppendDoubleQuote()
+    {
+        Write(DoubleQuote).Write(DoubleQuote);
+        return this;
+    }
     ICodeBlock ICodeBlock.WriteLine(string text)
     {
         return WriteLine(text);
     }
-
     ICodeBlock ICodeBlock.WriteLine(Action<IWriter> action)
     {
         return WriteLine(action);
     }
-    ICodeBlock ICodeBlock.WriteCodeBlock(Action<ICodeBlock> action, bool endSemi, bool alsoBlankLine)
+    ICodeBlock ICodeBlock.WriteCodeBlock(Action<ICodeBlock> action, bool endSemi)
     {
-        return WriteCodeBlock(action, endSemi, alsoBlankLine);
+        return WriteCodeBlock(action, endSemi);
     }
     public SourceCodeStringBuilder AppendEmptyLine()
     {
         return WriteLine("");
     }
-    ICodeBlock ICodeBlock.AppendEmptyLine()
-    {
-        return AppendEmptyLine();
-    }
     IWriter IWriter.AppendDoubleQuote(Action<IWriter> action)
     {
         return AppendDoubleQuote(action);
+    }
+    IWriter IWriter.AppendDoubleQuote(object obj)
+    {
+        return AppendDoubleQuote(obj);
+    }
+    IWriter IWriter.AppendDoubleQuote()
+    {
+        return AppendDoubleQuote();
     }
     #endregion
 }
