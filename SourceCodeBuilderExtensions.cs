@@ -94,4 +94,36 @@ public static class SourceCodeBuilderExtensions
             w.Write(variableName);
         });
     }
+    public static ICodeBlock InitializeNewBasicList(this ICodeBlock w, BasicList<int> list, Action<IWriter> variableAction)
+    {
+        w.WriteLine(w =>
+        {
+            w.Write("global::CommonBasicLibraries.CollectionClasses.BasicList<string> ");
+            variableAction.Invoke(w);
+            w.Write(" = new()");
+        }).WriteCodeBlock(w =>
+        {
+            int count = list.Count;
+            for (int i = 0; i < list.Count; i++)
+            {
+                w.WriteLine(w =>
+                {
+                    w.Write(list[i]);
+                    if (i != count - 1)
+                    {
+                        w.Write(",");
+                    }
+                });
+            }
+        }, endSemi: true);
+        return w;
+    }
+    public static ICodeBlock InitializeNewBasicList(this ICodeBlock w, BasicList<int> list, string variableName)
+    {
+        return w.InitializeNewBasicList(list, w =>
+        {
+            w.Write(variableName);
+        });
+    }
+
 }
