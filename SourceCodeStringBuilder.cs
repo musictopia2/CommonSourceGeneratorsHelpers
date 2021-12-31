@@ -232,10 +232,6 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
     {
         return WriteCodeBlock(action, endSemi);
     }
-    public SourceCodeStringBuilder AppendEmptyLine()
-    {
-        return WriteLine("");
-    }
     IWriter IWriter.AppendDoubleQuote(Action<IWriter> action)
     {
         return AppendDoubleQuote(action);
