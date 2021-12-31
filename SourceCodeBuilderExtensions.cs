@@ -98,7 +98,7 @@ public static class SourceCodeBuilderExtensions
     {
         w.WriteLine(w =>
         {
-            w.Write("global::CommonBasicLibraries.CollectionClasses.BasicList<string> ");
+            w.Write("global::CommonBasicLibraries.CollectionClasses.BasicList<int> ");
             variableAction.Invoke(w);
             w.Write(" = new()");
         }).WriteCodeBlock(w =>
