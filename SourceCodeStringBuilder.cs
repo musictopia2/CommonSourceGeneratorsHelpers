@@ -171,10 +171,8 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         return _builds.ToString();
     }
     #region Custom Stuff
-    //private bool _wasBlock;
     public SourceCodeStringBuilder WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false)
     {
-        //_wasBlock = true;
         StartBlock();
         action.Invoke(this);
         if (endSemi == false)
@@ -184,8 +182,7 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         }
         DecreaseIndent().EnsureEmptyLine();
         Indent();
-        Write("};"); //end semi means to also have a blank line.
-        _builds.AppendLine();
+        Write("};"); //since something else has blank line, no need for blank line now.
         return this;
     }
     public SourceCodeStringBuilder StartBlock()
