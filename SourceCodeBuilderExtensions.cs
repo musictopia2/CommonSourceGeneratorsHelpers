@@ -1,4 +1,5 @@
-﻿namespace CommonSourceGeneratorsHelpers;
+﻿using CommonBasicLibraries.CollectionClasses;
+namespace CommonSourceGeneratorsHelpers;
 public static class SourceCodeBuilderExtensions
 {
     //i like the idea of doing as extensions and not requiring new members for the interface.
@@ -61,5 +62,36 @@ public static class SourceCodeBuilderExtensions
             .AppendDoubleQuote(w => w.Write(""))
             .Write(";");
         return w;
+    }
+    public static ICodeBlock InitializeNewBasicList(this ICodeBlock w, BasicList<string> list, Action<IWriter> variableAction)
+    {
+        w.WriteLine(w =>
+        {
+            w.Write("global::CommonBasicLibraries.CollectionClasses.BasicList<string> ");
+            variableAction.Invoke(w);
+            w.Write(" = new()");
+        }).WriteCodeBlock(w =>
+        {
+            int count = list.Count;
+            for (int i = 0; i < list.Count; i++)
+            {
+                w.WriteLine(w =>
+                {
+                    w.AppendDoubleQuote(list[i]);
+                    if (i != count - 1)
+                    {
+                        w.Write(",");
+                    }
+                });
+            }
+        }, endSemi: true);
+        return w;
+    }
+    public static ICodeBlock InitializeNewBasicList(this ICodeBlock w, BasicList<string> list, string variableName)
+    {
+        return w.InitializeNewBasicList(list, w =>
+        {
+            w.Write(variableName);
+        });
     }
 }
