@@ -58,7 +58,19 @@ public static class Lists
         thisList.ForEach(x => newList.Add(x.ToString()));
         return newList;
     }
-
+    public static BasicList<int> CastStringListToIntegerList(this BasicList<string> list)
+    {
+        BasicList<int> output = new();
+        foreach (string str in list)
+        {
+            if (int.TryParse(str, out int a) == false)
+            {
+                return new();
+            }
+            output.Add(a);
+        }
+        return output;
+    }
     
     public static async Task ReconcileStrings<T>(this BasicList<string> sentList, BasicList<T> savedList, Func<T, string> match, Func<string, Task<T>> result)
     {
