@@ -8,6 +8,12 @@ public interface IWriter
     IWriter AppendDoubleQuote(); //this means nothing.
     public string GetSingleText(Action<IWriter> action);
 }
+public interface ICommentBlock
+{
+    ICommentBlock WriteLine(string text);
+    ICommentBlock WriteLine(Action<IWriter> action); //since this is intended to be all comments, no chances for code blocks
+    //by the time i do code blocks, i might as well use the full codeblock and do for reals.
+}
 public interface ICodeBlock
 {
     ICodeBlock WriteLine(string text);
@@ -15,7 +21,7 @@ public interface ICodeBlock
     ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false);
     public string GetSingleText(Action<IWriter> action);
 }
-public class SourceCodeStringBuilder : IWriter, ICodeBlock
+public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
 {
     private const string DoubleQuote = "\"";
     private const string _oneSpace = "    ";
@@ -171,6 +177,13 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
         return _builds.ToString();
     }
     #region Custom Stuff
+    public SourceCodeStringBuilder WriteCommentBlock(Action<ICommentBlock> action)
+    {
+        WriteLine("/*");
+        action.Invoke(this);
+        WriteLine("*/");
+        return this;
+    }
     public SourceCodeStringBuilder WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false)
     {
         StartBlock();
@@ -243,6 +256,16 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock
     IWriter IWriter.AppendDoubleQuote()
     {
         return AppendDoubleQuote();
+    }
+
+    ICommentBlock ICommentBlock.WriteLine(string text)
+    {
+        return WriteLine(text);
+    }
+
+    ICommentBlock ICommentBlock.WriteLine(Action<IWriter> action)
+    {
+        return WriteLine(action);
     }
     #endregion
 }
