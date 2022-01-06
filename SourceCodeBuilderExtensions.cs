@@ -7,7 +7,7 @@ public static class SourceCodeBuilderExtensions
     {
         w.Write("throw new ")
         .BasicProcessesWrite()
-            .Write("CustomBasicException(")
+            .Write("CustomBasicException($") //this will allow string interperlation (so if hints are needed for the errors, can be done).
             .AppendDoubleQuote(message)
             .Write(");");
         return w;
