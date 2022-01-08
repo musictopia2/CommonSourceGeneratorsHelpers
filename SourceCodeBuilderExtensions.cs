@@ -125,5 +125,33 @@ public static class SourceCodeBuilderExtensions
             w.Write(variableName);
         });
     }
-
+    public static void InitializeFromCustomList<T>(this ICodeBlock w, BasicList<T> list, Action<IWriter, T> action)
+    {
+        int count = list.Count;
+        for (int i = 0; i < list.Count; i++)
+        {
+            w.WriteLine(w =>
+            {
+                action.Invoke(w, list[i]);
+                if (i != count - 1)
+                {
+                    w.Write(",");
+                }
+            });
+        }
+    }
+    public static void InitializeFromCustomList<T>(this IWriter w, BasicList<T> list, Action<IWriter, T> action)
+    {
+        //don't assume anything.
+        //iwriter means will be same line.
+        int count = list.Count;
+        for (int i = 0; i < list.Count; i++)
+        {
+            action.Invoke(w, list[i]);
+            if (i != count - 1)
+            {
+                w.Write(",");
+            }
+        }
+    }
 }
