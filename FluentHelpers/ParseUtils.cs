@@ -1,5 +1,4 @@
-﻿using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.BasicExtensions;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace CommonSourceGeneratorsHelpers.FluentHelpers;
 internal class ParseUtils
@@ -84,11 +83,11 @@ internal class ParseUtils
         }
         var configLambda = call.ArgumentList.Arguments[toUse];
         return FindCallsOfMethodWithName(context, configLambda, name);
-}
-    internal static string GetStringContent(IReadOnlyList<CallInfo> list, int index = 0) //to get the string content as well since this is how its done.
+    }
+    internal static string GetStringContent(CallInfo info, int index = 0) //needs over load since it may not be a single one (when it has several properties).
     {
-        var a = list.Single().ArgumentList;
         int toUse;
+        var a = info.ArgumentList;
         if (a.Arguments.Count < index + 1)
         {
             toUse = a.Arguments.Count - 1;
@@ -108,6 +107,11 @@ internal class ParseUtils
             return w.Token.ValueText;
         }
         //this means i can get any information i want.  can parse to something else if i want.
+    }
+    internal static string GetStringContent(IReadOnlyList<CallInfo> list, int index = 0) //to get the string content as well since this is how its done.
+    {
+        var a = list.Single();
+        return GetStringContent(a, index);   
     }
     static T? TryGetMethodSymbolInfo<T>(ParseContext context, SyntaxNode n) where T : class, ISymbol
     {
