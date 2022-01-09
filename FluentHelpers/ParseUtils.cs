@@ -64,14 +64,16 @@ internal class ParseUtils
         ParseContext context,
         CallInfo call,
         string name,
-        bool optional = false)
+        bool optional = false,
+        int argumentIndex = 0
+        )
     {
         if (optional && call.ArgumentList.Arguments.Count <= 0)
         {
             return EmptyCallsList;
         }
 
-        var configLambda = call.ArgumentList.Arguments[0];
+        var configLambda = call.ArgumentList.Arguments[argumentIndex];
         return FindCallsOfMethodWithName(context, configLambda, name);
     }
     static T? TryGetMethodSymbolInfo<T>(ParseContext context, SyntaxNode n) where T : class, ISymbol
