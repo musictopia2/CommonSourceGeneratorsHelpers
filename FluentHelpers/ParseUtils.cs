@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.BasicExtensions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace CommonSourceGeneratorsHelpers.FluentHelpers;
 internal class ParseUtils
@@ -65,16 +66,48 @@ internal class ParseUtils
         CallInfo call,
         string name,
         bool optional = false,
-        int argumentIndex = 0
+        int argumentIndex = 0 //to support more than one argument.
         )
     {
         if (optional && call.ArgumentList.Arguments.Count <= 0)
         {
             return EmptyCallsList;
         }
-
-        var configLambda = call.ArgumentList.Arguments[argumentIndex];
+        int toUse;
+        if (call.ArgumentList.Arguments.Count() < argumentIndex + 1)
+        {
+            toUse = call.ArgumentList.Arguments.Count - 1;
+        }
+        else
+        {
+            toUse = argumentIndex;
+        }
+        var configLambda = call.ArgumentList.Arguments[toUse];
         return FindCallsOfMethodWithName(context, configLambda, name);
+}
+    internal static string GetStringContent(IReadOnlyList<CallInfo> list, int index = 0) //to get the string content as well since this is how its done.
+    {
+        var a = list.Single().ArgumentList;
+        int toUse;
+        if (a.Arguments.Count < index + 1)
+        {
+            toUse = a.Arguments.Count - 1;
+        }
+        else
+        {
+            toUse = index;
+        }
+        var b = a.Arguments[toUse];
+        var w = b.DescendantNodes().OfType<LiteralExpressionSyntax>().SingleOrDefault();
+        if (w is null)
+        {
+            return "";
+        }
+        else
+        {
+            return w.Token.ValueText;
+        }
+        //this means i can get any information i want.  can parse to something else if i want.
     }
     static T? TryGetMethodSymbolInfo<T>(ParseContext context, SyntaxNode n) where T : class, ISymbol
     {
