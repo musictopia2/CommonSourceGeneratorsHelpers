@@ -113,7 +113,7 @@ internal class ParseUtils
         var a = list.Single();
         return GetStringContent(a, index);   
     }
-    static T? TryGetMethodSymbolInfo<T>(ParseContext context, SyntaxNode n) where T : class, ISymbol
+    private static T? TryGetMethodSymbolInfo<T>(ParseContext context, SyntaxNode n) where T : class, ISymbol
     {
         try
         {
@@ -124,5 +124,42 @@ internal class ParseUtils
         {
             return default;
         }
+    }
+    //these 2 are added.  so if we want to know whether an option was chosen and if so, capture one additional value, can be done.
+    internal static bool PropertyHasExpectedValueAlone(IReadOnlyList<CallInfo> calls, IPropertySymbol p, ITypeSymbol classSymbol)
+    {
+        foreach (var call in calls)
+        {
+            var ignoreIdentifier = call.Invocation.DescendantNodes()
+                   .OfType<IdentifierNameSyntax>()
+                   .Last();
+            var cloneProp = classSymbol.GetMembers(ignoreIdentifier.Identifier.ValueText)
+            .OfType<IPropertySymbol>()
+            .SingleOrDefault();
+            if (cloneProp.Name == p.Name && cloneProp.OriginalDefinition.ToDisplayString() == p.OriginalDefinition.ToDisplayString())
+            {
+                //since its only testing, its okay.  can later decide how i put to extension.
+                return true;
+            }
+        }
+        return false;
+    }
+    internal static (bool Shown, string Value) PropertyGetExtraInfo(IReadOnlyList<CallInfo> calls, IPropertySymbol p, ITypeSymbol classSymbol)
+    {
+        foreach (var call in calls)
+        {
+            var ignoreIdentifier = call.Invocation.DescendantNodes()
+                   .OfType<IdentifierNameSyntax>()
+                   .Last();
+            var cloneProp = classSymbol.GetMembers(ignoreIdentifier.Identifier.ValueText)
+            .OfType<IPropertySymbol>()
+            .SingleOrDefault();
+            if (cloneProp.Name == p.Name && cloneProp.OriginalDefinition.ToDisplayString() == p.OriginalDefinition.ToDisplayString())
+            {
+                string value = ParseUtils.GetStringContent(call);
+                return (true, value);
+            }
+        }
+        return (false, "");
     }
 }
