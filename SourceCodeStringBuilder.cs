@@ -19,6 +19,7 @@ public interface ICodeBlock
     ICodeBlock WriteLine(string text);
     ICodeBlock WriteLine(Action<IWriter> action);
     ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false);
+    ICodeBlock WriteLambaBlock(Action<ICodeBlock> action); //this will end with semi and the )
     public string GetSingleText(Action<IWriter> action);
 }
 public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
@@ -181,7 +182,7 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
     {
         WriteLine("/*");
         action.Invoke(this);
-        WriteLine("*/");
+        Write("*/"); //try this too.
         return this;
     }
     public SourceCodeStringBuilder WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false)
@@ -266,6 +267,18 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
     ICommentBlock ICommentBlock.WriteLine(Action<IWriter> action)
     {
         return WriteLine(action);
+    }
+
+    ICodeBlock ICodeBlock.WriteLambaBlock(Action<ICodeBlock> action)
+    {
+        StartBlock();
+        action.Invoke(this);
+        DecreaseIndent().EnsureEmptyLine();
+        Indent();
+        Write("});"); //since something else has blank line, no need for blank line now.
+        //try this way when we need the final ) statement.  sometimes needed when we have to do lamda statement with functs.
+        //needed when i can't do one liners to satisfy the lamda expressions for custom functions.
+        return this;
     }
     #endregion
 }
