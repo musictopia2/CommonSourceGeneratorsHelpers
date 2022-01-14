@@ -43,12 +43,37 @@ public static class RoslynExtensions
     public static bool IsMappable(this ClassDeclarationSyntax source) => source.Implements("IMappable");
     public static bool Implements(this ClassDeclarationSyntax source, string interfaceName)
     {
+        //has to be this way now for classes so it can implement generic interfaces.
         if (source.BaseList is null)
         {
             return false;
         }
         IEnumerable<BaseTypeSyntax> baseTypes = source.BaseList.Types.Select(baseType => baseType);
-        return baseTypes.Any(baseType => baseType.ToString() == interfaceName);
+        foreach (BaseTypeSyntax baseType in baseTypes)
+        {
+            if (baseType.Type is GenericNameSyntax gg && gg.Identifier.ValueText == interfaceName)
+            {
+                return true;
+            }
+            else if (baseType.Type is IdentifierNameSyntax identifierName && identifierName.Identifier.ValueText == interfaceName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public static BasicList<INamedTypeSymbol> GetGenericSymbolsImplemented(this INamedTypeSymbol symbol, string interfaceName)
+    {
+        var list = symbol.AllInterfaces;
+        BasicList<INamedTypeSymbol> output = new();
+        foreach (var item in list)
+        {
+            if (item.IsGenericType && item.TypeArguments.Count() == 1 && item.Name == interfaceName)
+            {
+                output.Add((INamedTypeSymbol)item.TypeArguments.Single());
+            }
+        }
+        return output;
     }
     public static bool IsMappable(this RecordDeclarationSyntax source) => source.Implements("IMappable");
     public static bool Implements(this RecordDeclarationSyntax source, string interfaceName)
@@ -88,8 +113,7 @@ public static class RoslynExtensions
     //had to rename because there can be cases like nullable where we need to get the generic type even if not a collection type.
     public static ITypeSymbol? GetSingleGenericTypeUsed(this ITypeSymbol symbol)
     {
-        INamedTypeSymbol? others = symbol as INamedTypeSymbol;
-        if (others is null)
+        if (symbol is not INamedTypeSymbol others)
         {
             return null;
         }
@@ -316,9 +340,7 @@ public static class RoslynExtensions
         string message = $"Partial class was required.  The class name was {clazz.Identifier.Value}";
         context.ReportDiagnostic(Diagnostic.Create(message.ReportError(id), Location.None));
     }
-#pragma warning disable RS2008 // Enable analyzer release tracking
     private static DiagnosticDescriptor ReportError(this string errorMessage, string id) => new(id,
-#pragma warning restore RS2008 // Enable analyzer release tracking
         "Could not create source generation",
         errorMessage,
         "Error",
