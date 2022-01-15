@@ -75,6 +75,7 @@ public static class RoslynExtensions
         }
         return output;
     }
+    
     public static bool IsMappable(this RecordDeclarationSyntax source) => source.Implements("IMappable");
     public static bool Implements(this RecordDeclarationSyntax source, string interfaceName)
     {
@@ -544,6 +545,36 @@ public static class RoslynExtensions
             }
             output.Add(temps);
         } while (true);
+    }
+    /// <summary>
+    /// this returns the object so i can retrieve the variable name of a given type.  only is expecting one of them to be found.
+    /// </summary>
+    /// <param name="symbol"></param>
+    /// <param name="typeName"></param>
+    /// <returns></returns>
+    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName) //intending to usually be a class
+    {
+        var symbols = symbol.GetAllParents();
+        foreach (var s in symbols)
+        {
+            var list1 = s.GetMembers().OfType<IPropertySymbol>();
+            foreach (var item in list1)
+            {
+                if (item.Type.Name == typeName)
+                {
+                    return item; //try this way.
+                }
+            }
+            var list2 = s.GetMembers().OfType<IFieldSymbol>();
+            foreach (var item in list2)
+            {
+                if (item.Type.Name == typeName)
+                {
+                    return item;
+                }
+            }
+        }
+        return null;
     }
     public static BasicList<IPropertySymbol> GetAllPublicProperties(this ITypeSymbol symbol)
     {
