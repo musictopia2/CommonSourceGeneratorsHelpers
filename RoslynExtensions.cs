@@ -552,9 +552,20 @@ public static class RoslynExtensions
     /// <param name="symbol"></param>
     /// <param name="typeName"></param>
     /// <returns></returns>
-    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName) //intending to usually be a class
+    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName, bool includeBase = false) //intending to usually be a class
     {
-        var symbols = symbol.GetAllParents();
+        IEnumerable<INamedTypeSymbol> symbols;
+        if (includeBase)
+        {
+            symbols = symbol.GetAllParents();
+        }
+        else
+        {
+            symbols = new BasicList<INamedTypeSymbol>
+            {
+                symbol
+            };
+        }
         foreach (var s in symbols)
         {
             var list1 = s.GetMembers().OfType<IPropertySymbol>();
