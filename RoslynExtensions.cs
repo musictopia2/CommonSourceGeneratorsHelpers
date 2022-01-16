@@ -62,9 +62,17 @@ public static class RoslynExtensions
         }
         return false;
     }
-    public static BasicList<INamedTypeSymbol> GetGenericSymbolsImplemented(this INamedTypeSymbol symbol, string interfaceName)
+    public static BasicList<INamedTypeSymbol> GetGenericSymbolsImplemented(this INamedTypeSymbol symbol, string interfaceName, bool includingSub = false)
     {
-        var list = symbol.AllInterfaces;
+        IEnumerable<INamedTypeSymbol> list;
+        if (includingSub == true)
+        {
+            list = symbol.AllInterfaces;
+        }
+        else
+        {
+            list = symbol.Interfaces;
+        }
         BasicList<INamedTypeSymbol> output = new();
         foreach (var item in list)
         {
@@ -552,20 +560,10 @@ public static class RoslynExtensions
     /// <param name="symbol"></param>
     /// <param name="typeName"></param>
     /// <returns></returns>
-    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName, bool includeBase = false) //intending to usually be a class
+    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName) //intending to usually be a class
     {
         IEnumerable<INamedTypeSymbol> symbols;
-        if (includeBase)
-        {
-            symbols = symbol.GetAllParents();
-        }
-        else
-        {
-            symbols = new BasicList<INamedTypeSymbol>
-            {
-                symbol
-            };
-        }
+        symbols = symbol.GetAllParents();
         foreach (var s in symbols)
         {
             var list1 = s.GetMembers().OfType<IPropertySymbol>();
