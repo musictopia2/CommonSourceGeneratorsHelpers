@@ -3,6 +3,8 @@ using CommonBasicLibraries.CollectionClasses;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Text;
+
 namespace CommonRoslynExtensionsLibrary;
 public static class RoslynExtensions
 {
@@ -79,6 +81,22 @@ public static class RoslynExtensions
             if (item.IsGenericType && item.TypeArguments.Count() == 1 && item.Name == interfaceName)
             {
                 output.Add((INamedTypeSymbol)item.TypeArguments.Single());
+            }
+            IEnumerable<INamedTypeSymbol> others;
+            if (includingSub)
+            {
+                others = item.AllInterfaces;
+            }
+            else
+            {
+                others = item.Interfaces;
+            }
+            foreach (var f in others)
+            {
+                if (f.IsGenericType && f.TypeArguments.Count() == 1 && f.Name == interfaceName)
+                {
+                    output.Add((INamedTypeSymbol)f.TypeArguments.Single());
+                }
             }
         }
         return output;
@@ -658,5 +676,26 @@ public static class RoslynExtensions
             }
         }
         return false;
+    }
+    public static string GetGenericString(this INamedTypeSymbol symbol)
+    {
+        if (symbol.TypeArguments.Count() == 0)
+        {
+            return "";
+        }
+        StringBuilder builder = new();
+        builder.Append("<");
+        int index = 0;
+        foreach (var item in symbol.TypeArguments)
+        {
+            if (index > 0)
+            {
+                builder.Append(", ");
+            }
+            builder.Append(item.Name);
+            index++;
+        }
+        builder.Append(">");
+        return builder.ToString();
     }
 }
