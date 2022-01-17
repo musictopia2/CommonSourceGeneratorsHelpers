@@ -636,4 +636,27 @@ public static class RoslynExtensions
         return compilation.GetSemanticModel(firsts!.SyntaxTree);
     }
     public static string GetStringFromList(this IEnumerable<string> list) => string.Join(Environment.NewLine, list);
+    public static ISymbol? GetSpecificMethod(this INamedTypeSymbol symbol, string methodNameExpected)
+    {
+        foreach (var item in symbol.GetMembers())
+        {
+            if (item.Name == methodNameExpected && item.Kind == SymbolKind.Method)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
+    public static bool InheritsFrom(this INamedTypeSymbol symbol, string baseName)
+    {
+        var list = symbol.GetAllParents();
+        foreach (var item in list)
+        {
+            if (item.Name == baseName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
