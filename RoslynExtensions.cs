@@ -636,6 +636,23 @@ public static class RoslynExtensions
         INamedTypeSymbol other = (INamedTypeSymbol)symbol;
         return other.GetAllPublicMethods(attributeName);
     }
+    public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol, string attributeName)
+    {
+        var symbols = symbol.GetAllParents();
+        BasicList<IMethodSymbol> output = new();
+        foreach (var s in symbols)
+        {
+            var list = s.GetMembers().OfType<IMethodSymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public && xx.MethodKind == MethodKind.Ordinary && xx.HasAttribute(attributeName));
+            output.AddRange(list);
+        }
+        return output;
+    }
+    //sometimes i need the methods with a certain attribute but not overrided ones.  all literally means even from the base classes.
+    public static BasicList<IMethodSymbol> GetPublicMethods(this INamedTypeSymbol symbol, string attributeName)
+    {
+        var output = symbol.GetMembers().OfType<IMethodSymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public && xx.MethodKind == MethodKind.Ordinary && xx.HasAttribute(attributeName));
+        return output.ToBasicList();
+    }
     public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol)
     {
         var symbols = symbol.GetAllParents();
