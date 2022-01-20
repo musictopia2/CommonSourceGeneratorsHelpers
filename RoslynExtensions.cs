@@ -671,6 +671,23 @@ public static class RoslynExtensions
         return compilation.GetSemanticModel(firsts!.SyntaxTree);
     }
     public static string GetStringFromList(this IEnumerable<string> list) => string.Join(Environment.NewLine, list);
+    //this means in any case where we need specifc method with specific parameters expected, then can do it.
+    //if there are too many overloaded, will require rethinking though.
+    public static IMethodSymbol? GetSpecificMethod(this INamedTypeSymbol symbol, string methodNameExpected, int parametersExpected)
+    {
+        foreach (var item in symbol.GetMembers())
+        {
+            if (item.Name == methodNameExpected && item.Kind == SymbolKind.Method)
+            {
+                IMethodSymbol output = (IMethodSymbol)item;
+                if (output.Parameters.Count() == parametersExpected)
+                {
+                    return output;
+                }
+            }
+        }
+        return null;
+    }
     public static ISymbol? GetSpecificMethod(this INamedTypeSymbol symbol, string methodNameExpected)
     {
         foreach (var item in symbol.GetMembers())
