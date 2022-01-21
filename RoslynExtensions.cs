@@ -732,4 +732,17 @@ public static class RoslynExtensions
         builder.Append(">");
         return builder.ToString();
     }
+    public static bool IsTypeEqual(this ITypeSymbol firsts, ITypeSymbol seconds)
+    {
+        //this can be global because there are many use cases for this.
+        if (firsts.Name != seconds.Name)
+        {
+            return false;
+        }
+        if (firsts.ContainingAssembly.Name != seconds.ContainingAssembly.Name)
+        {
+            return false;
+        }
+        return true;
+    }
 }
