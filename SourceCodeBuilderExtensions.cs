@@ -1,4 +1,6 @@
 ﻿using CommonBasicLibraries.CollectionClasses;
+using Microsoft.CodeAnalysis;
+
 namespace CommonSourceGeneratorsHelpers;
 public static class SourceCodeBuilderExtensions
 {
@@ -153,5 +155,85 @@ public static class SourceCodeBuilderExtensions
                 w.Write(",");
             }
         }
+    }
+    public static IWriter SymbolFullNameWrite(this IWriter w, INamedTypeSymbol symbol)
+    {
+        w.GlobalWrite()
+            .Write(symbol.ContainingNamespace)
+            .Write(".")
+            .Write(symbol.Name);
+        return w;
+    }
+    public static void StartPartialClass(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<ICodeBlock> action)
+    {
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(symbol.ContainingNamespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(symbol.Name);
+            })
+            .WriteCodeBlock(w =>
+            {
+                action.Invoke(w);
+            });
+    }
+    public static void StartGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string finishNamespace, string className, Action<ICodeBlock> action)
+    {
+        string ns = compilation.AssemblyName!;
+        builder.WriteLine("#nullable enable")
+        .WriteLine(w =>
+        {
+            w.Write("namespace ")
+            .Write(ns)
+            .Write(".")
+            .Write(finishNamespace)
+            .Write(";");
+        })
+        .WriteLine(w =>
+        {
+            w.Write("public static class ")
+            .Write(className);
+        })
+        .WriteCodeBlock(w =>
+        {
+            action.Invoke(w);
+        });
+    }
+    public static void StartGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string finishNamespace, string className, string methodName, Action<ICodeBlock> action)
+    {
+        string ns = compilation.AssemblyName!;
+        builder.WriteLine("#nullable enable")
+        .WriteLine(w =>
+        {
+            w.Write("namespace ")
+            .Write(ns)
+            .Write(".")
+            .Write(finishNamespace)
+            .Write(";");
+        })
+        .WriteLine(w =>
+        {
+            w.Write("public static class ")
+            .Write(className);
+        })
+        .WriteCodeBlock(w =>
+        {
+            w.WriteLine(w =>
+            {
+                w.Write("public static void ")
+                .Write(methodName)
+                .Write("()");
+            })
+            .WriteCodeBlock(w =>
+            {
+                action.Invoke(w);
+            });
+        });
     }
 }
