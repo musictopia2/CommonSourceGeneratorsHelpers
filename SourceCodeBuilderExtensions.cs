@@ -236,4 +236,10 @@ public static class SourceCodeBuilderExtensions
             });
         });
     }
+    public static IWriter BasicListWrite(this IWriter w)
+    {
+        w.GlobalWrite()
+            .Write("CommonBasicLibraries.CollectionClasses.BasicList");
+        return w; //this will be the full basiclist namespace so even if not referenced, will work.  since this is common enough.
+    }
 }
