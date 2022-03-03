@@ -24,7 +24,7 @@ public interface ICodeBlock
 }
 public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
 {
-    private const string DoubleQuote = "\"";
+    private const string _doubleQuote = "\"";
     private const string _oneSpace = "    ";
     private const string _twoSpaces = "        ";
     private const string _threeSpaces = "            ";
@@ -219,19 +219,19 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
     }
     public SourceCodeStringBuilder AppendDoubleQuote(Action<SourceCodeStringBuilder> action)
     {
-        Write(DoubleQuote);
+        Write(_doubleQuote);
         action.Invoke(this);
-        Write(DoubleQuote);
+        Write(_doubleQuote);
         return this;
     }
     public SourceCodeStringBuilder AppendDoubleQuote(object obj)
     {
-        Write(DoubleQuote).Write(obj).Write(DoubleQuote);
+        Write(_doubleQuote).Write(obj).Write(_doubleQuote);
         return this;
     }
     public SourceCodeStringBuilder AppendDoubleQuote()
     {
-        Write(DoubleQuote).Write(DoubleQuote);
+        Write(_doubleQuote).Write(_doubleQuote);
         return this;
     }
     ICodeBlock ICodeBlock.WriteLine(string text)

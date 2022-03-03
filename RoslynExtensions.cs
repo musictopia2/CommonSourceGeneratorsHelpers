@@ -617,7 +617,13 @@ public static class RoslynExtensions
         foreach (var s in symbols)
         {
             var list = s.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public);
-            output.AddRange(list);
+            foreach (var f in list)
+            {
+                if (output.Any(x => x.Name == f.Name) == false)
+                {
+                    output.Add(f);
+                }
+            }
         }
         return output;
     }
