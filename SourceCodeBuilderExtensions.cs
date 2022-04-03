@@ -183,6 +183,26 @@ public static class SourceCodeBuilderExtensions
                 action.Invoke(w);
             });
     }
+    public static void StartPartialClassImplements(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<IWriter> implements, Action<ICodeBlock> content) //sometimes, you need to implement something. i think name should be a little different.
+    {
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(symbol.ContainingNamespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(symbol.Name);
+                implements.Invoke(w);
+            })
+            .WriteCodeBlock(w =>
+            {
+                content.Invoke(w);
+            });
+    }
     public static void StartGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string finishNamespace, string className, Action<ICodeBlock> action)
     {
         string ns = compilation.AssemblyName!;

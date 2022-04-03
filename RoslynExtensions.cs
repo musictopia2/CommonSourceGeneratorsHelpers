@@ -367,6 +367,11 @@ public static class RoslynExtensions
         string message = $"Partial class was required.  The class name was {clazz.Identifier.Value}";
         context.ReportDiagnostic(Diagnostic.Create(message.ReportError(id), Location.None));
     }
+    public static void ReportPartialClassRequired(this SourceProductionContext context, ClassDeclarationSyntax clazz, string id = "PartialCode")
+    {
+        string message = $"Partial class was required.  The class name was {clazz.Identifier.Value}";
+        context.ReportDiagnostic(Diagnostic.Create(message.ReportError(id), Location.None));
+    }
     private static DiagnosticDescriptor ReportError(this string errorMessage, string id) => new(id,
         "Could not create source generation",
         errorMessage,
