@@ -164,6 +164,12 @@ public static class SourceCodeBuilderExtensions
             .Write(symbol.Name);
         return w;
     }
+    public static IWriter EndsWithEmptyString(this IWriter w)
+    {
+        w.AppendDoubleQuote()
+            .Write(";");
+        return w;
+    }
     public static void StartPartialClass(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<ICodeBlock> action)
     {
         builder.WriteLine("#nullable enable")
@@ -213,6 +219,26 @@ public static class SourceCodeBuilderExtensions
             .Write(ns)
             .Write(".")
             .Write(finishNamespace)
+            .Write(";");
+        })
+        .WriteLine(w =>
+        {
+            w.Write("public static class ")
+            .Write(className);
+        })
+        .WriteCodeBlock(w =>
+        {
+            action.Invoke(w);
+        });
+    }
+    public static void StartGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string className, Action<ICodeBlock> action)
+    {
+        string ns = compilation.AssemblyName!;
+        builder.WriteLine("#nullable enable")
+        .WriteLine(w =>
+        {
+            w.Write("namespace ")
+            .Write(ns)
             .Write(";");
         })
         .WriteLine(w =>
