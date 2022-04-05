@@ -223,7 +223,7 @@ public static class SourceCodeBuilderExtensions
         })
         .WriteLine(w =>
         {
-            w.Write("public static class ")
+            w.Write("public static partial class ")
             .Write(className);
         })
         .WriteCodeBlock(w =>
@@ -243,7 +243,49 @@ public static class SourceCodeBuilderExtensions
         })
         .WriteLine(w =>
         {
-            w.Write("public static class ")
+            w.Write("public static partial class ")
+            .Write(className);
+        })
+        .WriteCodeBlock(w =>
+        {
+            action.Invoke(w);
+        });
+    }
+    public static void StartInternalGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string className, Action<ICodeBlock> action)
+    {
+        string ns = compilation.AssemblyName!;
+        builder.WriteLine("#nullable enable")
+        .WriteLine(w =>
+        {
+            w.Write("namespace ")
+            .Write(ns)
+            .Write(";");
+        })
+        .WriteLine(w =>
+        {
+            w.Write("internal static partial class ")
+            .Write(className);
+        })
+        .WriteCodeBlock(w =>
+        {
+            action.Invoke(w);
+        });
+    }
+    public static void StartInternalGlobalProcesses(this SourceCodeStringBuilder builder, Compilation compilation, string finishNamespace, string className, Action<ICodeBlock> action)
+    {
+        string ns = compilation.AssemblyName!;
+        builder.WriteLine("#nullable enable")
+        .WriteLine(w =>
+        {
+            w.Write("namespace ")
+            .Write(ns)
+            .Write(".")
+            .Write(finishNamespace)
+            .Write(";");
+        })
+        .WriteLine(w =>
+        {
+            w.Write("internal static partial class ")
             .Write(className);
         })
         .WriteCodeBlock(w =>
@@ -265,7 +307,7 @@ public static class SourceCodeBuilderExtensions
         })
         .WriteLine(w =>
         {
-            w.Write("public static class ")
+            w.Write("public static partial class ")
             .Write(className);
         })
         .WriteCodeBlock(w =>
