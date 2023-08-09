@@ -41,6 +41,30 @@ internal class OldGeneratorAddSource : IAddSource
         _context.AddSource(path, text);
     }
 }
+internal class OldGeneratorAddSource : IAddSource
+{
+    private readonly GeneratorExecutionContext _context;
+    public OldGeneratorAddSource(GeneratorExecutionContext context)
+    {
+        _context = context;
+    }
+    void IAddSource.AddSource(string path, string text)
+    {
+        _context.AddSource(path, text);
+    }
+}
+internal class OldGeneratorPostInitializationAddSource : IAddSource
+{
+    private readonly GeneratorPostInitializationContext _context;
+    public OldGeneratorAddSource(GeneratorPostInitializationContext context)
+    {
+        _context = context;
+    }
+    void IAddSource.AddSource(string path, string text)
+    {
+        _context.AddSource(path, text);
+    }
+}
 internal static class Extensions
 {
     public static IAddSource CreateCustomSource(this SourceProductionContext source)
@@ -50,6 +74,10 @@ internal static class Extensions
     public static IAddSource CreateCustomSource(this GeneratorExecutionContext source)
     {
         return new OldGeneratorAddSource(source);
+    }
+    public static IAddSource CreateCustomSource(this GeneratorPostInitializationContext source)
+    {
+        return new OldGeneratorPostInitializationAddSource(source);
     }
     public static IAddSource CreateCustomSource(this IncrementalGeneratorPostInitializationContext source)
     {
