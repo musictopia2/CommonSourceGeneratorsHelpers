@@ -31,9 +31,6 @@ public partial class RandomGenerator
         CityStateClass chosen = cities.GetRandomItem();
         output.City = chosen.City;
         output.State = chosen.StateAbb;
-#if NET6_0_OR_GREATER
-        output.LastDate = NextDateOnly();
-#endif
         output.PostalCode = NextZipCode();
         output.Address = NextAddress();
         output.IsActive = NextBool(70); //wants to lean towards active
