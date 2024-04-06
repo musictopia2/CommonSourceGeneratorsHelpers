@@ -14,6 +14,38 @@ public static class SourceCodeBuilderExtensions
             .Write(");");
         return w;
     }
+    public static IWriter ConsoleWriteLine(this IWriter w, Action<IWriter> message)
+    {
+        w.Write("Console.WriteLine")
+            .AppendDoubleQuote(message)
+            .Write(");");
+        return w;
+    }
+    public static IWriter ConsoleWriteLine(this IWriter w, string message)
+    {
+        w.Write("Console.WriteLine")
+            .AppendDoubleQuote(message)
+            .Write(");");
+        return w;
+    }
+    public static ICodeBlock ConsoleWriteLine(this ICodeBlock w, string message)
+    {
+        w.WriteLine(w => w.ConsoleWriteLine(message));
+        return w;
+    }
+    public static ICodeBlock ConsoleWriteLine(this ICodeBlock w, Action<IWriter> message)
+    {
+        w.WriteLine(w => w.ConsoleWriteLine(message));
+        return w;
+    }
+    public static ICodeBlock ConsoleWriteSeveralLines(this ICodeBlock w, BasicList<string> items)
+    {
+        foreach (var item in items)
+        {
+            w.ConsoleWriteLine(item);
+        }
+        return w;
+    }
     public static IWriter BasicProcessesWrite(this IWriter w)
     {
         w.GlobalWrite()
@@ -170,6 +202,22 @@ public static class SourceCodeBuilderExtensions
             .Write(";");
         return w;
     }
+    public static void StartPartialClass(this SourceCodeStringBuilder builder, ICustomResult result, Action<ICodeBlock> action)
+    {
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(result.Namespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(result.ClassName);
+            })
+            .WriteCodeBlock(action.Invoke);
+    }
     public static void StartPartialClass(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<ICodeBlock> action)
     {
         builder.WriteLine("#nullable enable")
@@ -188,6 +236,56 @@ public static class SourceCodeBuilderExtensions
             {
                 action.Invoke(w);
             });
+    }
+    public static void StartPartialClassImplements(this SourceCodeStringBuilder builder, ICustomResult result, string implements, Action<ICodeBlock> content) //sometimes, you need to implement something. i think name should be a little different.
+    {
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(result.Namespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(result.ClassName)
+                .Write(implements);
+            })
+            .WriteCodeBlock(content.Invoke);
+    }
+    public static void StartPartialClassConsoleWriter(this SourceCodeStringBuilder builder, ICustomResult result, string method, Action<ICodeBlock> action)
+    {
+        builder.StartPartialClass(result, w =>
+        {
+            w.WriteLine($"public void {method}()")
+            .WriteCodeBlock(w =>
+            {
+                w.ConsoleWriteLine("This is a start of printing information needed for testing");
+                action.Invoke(w);
+            });
+        });
+    }
+    public static void StartPartialClassConsoleWriter(this SourceCodeStringBuilder builder, ICustomResult result, Action<ICodeBlock> action)
+    {
+        builder.StartPartialClassConsoleWriter(result, "RunTest", action);
+    }
+    public static void StartPartialClassImplements(this SourceCodeStringBuilder builder, ICustomResult result, Action<IWriter> implements, Action<ICodeBlock> content) //sometimes, you need to implement something. i think name should be a little different.
+    {
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(result.Namespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(result.ClassName);
+                implements.Invoke(w);
+            })
+            .WriteCodeBlock(content.Invoke);
     }
     public static void StartPartialClassImplements(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<IWriter> implements, Action<ICodeBlock> content) //sometimes, you need to implement something. i think name should be a little different.
     {

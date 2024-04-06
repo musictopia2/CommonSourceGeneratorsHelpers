@@ -1,5 +1,6 @@
 ﻿using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.BasicExtensions;
 using CommonBasicLibraries.CollectionClasses;
+using CommonSourceGeneratorsHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -760,5 +761,84 @@ public static class RoslynExtensions
             return false;
         }
         return true;
+    }
+    public static T GetStartingResults<T>(this INamedTypeSymbol symbol)
+        where T: ICustomResult, new()
+    {
+        T output = new();
+        output.ClassName = symbol.Name;
+        output.Namespace = symbol.ContainingNamespace.ToDisplayString();
+        return output;
+    }
+    public static T GetStartingPropertyInformation<T>(this IPropertySymbol symbol)
+        where T: ICustomProperty, new()
+    {
+        T output = new();
+        INamedTypeSymbol type;
+        if (symbol.Type.Name == "")
+        {
+            output.Nullable = true;
+            INamedTypeSymbol temp;
+            temp = (INamedTypeSymbol)symbol.Type;
+            type = (INamedTypeSymbol)temp.TypeArguments[0];
+        }
+        else
+        {
+            output.Nullable = false;
+            type = (INamedTypeSymbol) symbol;
+        }
+        output.UnderlyingSymbolName = type.Name;
+        output.ContainingNameSpace = type.ContainingNamespace.ToDisplayString();
+        output.PropertyName = symbol.Name;
+        if (type.TypeKind == TypeKind.Enum)
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.StandardEnum;
+        }
+        else if (type.Name.StartsWith("Enum"))
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.CustomEnum;
+        }
+        else if (type.Name == "Int32")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Int;
+        }
+        else if (type.Name == "Boolean")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Bool;
+        }
+        else if (type.Name == "Decimal")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Decimal;
+        }
+        else if (type.Name == "Double")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Double;
+        }
+        else if (type.Name == "Float" || type.Name == "Single")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Float;
+        }
+        else if (type.Name == "DateOnly")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.DateOnly;
+        }
+        else if (type.Name == "DateTime")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.DateTime;
+        }
+        else if (type.Name == "String")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.String;
+        }
+        else if (type.Name == "Char")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.Char;
+        }
+        else
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.None; //can show errors showing not supported.
+            //most likely, if none of those, then 
+        }
+        return output;
     }
 }
