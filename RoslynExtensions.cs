@@ -775,7 +775,7 @@ public static class RoslynExtensions
     {
         T output = new();
         INamedTypeSymbol type;
-        if (symbol.Type.Name == "")
+        if (symbol.Type.Name == "Nullable")
         {
             output.Nullable = true;
             INamedTypeSymbol temp;
@@ -785,7 +785,7 @@ public static class RoslynExtensions
         else
         {
             output.Nullable = false;
-            type = (INamedTypeSymbol) symbol;
+            type = (INamedTypeSymbol) symbol.Type;
         }
         output.UnderlyingSymbolName = type.Name;
         output.ContainingNameSpace = type.ContainingNamespace.ToDisplayString();
