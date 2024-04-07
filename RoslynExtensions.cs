@@ -822,6 +822,10 @@ public static class RoslynExtensions
         {
             output.VariableCustomCategory = EnumSimpleTypeCategory.DateOnly;
         }
+        else if (type.Name == "TimeOnly")
+        {
+            output.VariableCustomCategory = EnumSimpleTypeCategory.TimeOnly;
+        }
         else if (type.Name == "DateTime")
         {
             output.VariableCustomCategory = EnumSimpleTypeCategory.DateTime;
