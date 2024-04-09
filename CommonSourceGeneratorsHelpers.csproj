@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<ImplicitUsings>true</ImplicitUsings>
-		<Version>2.0.59</Version>
+		<Version>2.0.63</Version>
 		<Authors>musictopia</Authors>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<PackageProjectUrl>https://github.com/musictopia2/CommonSourceGeneratorsHelpers</PackageProjectUrl>
@@ -16,7 +16,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		
-		<PackageReference Include="GenerateHelperLibraries" Version="2.0.4" PrivateAssets="all" />
+		<PackageReference Include="GenerateHelperLibraries" Version="2.0.5" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
 	</ItemGroup>
