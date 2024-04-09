@@ -5,7 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
-
 namespace CommonRoslynExtensionsLibrary;
 public static class RoslynExtensions
 {
@@ -76,7 +75,7 @@ public static class RoslynExtensions
         {
             list = symbol.Interfaces;
         }
-        BasicList<INamedTypeSymbol> output = new();
+        BasicList<INamedTypeSymbol> output = [];
         foreach (var item in list)
         {
             if (item.IsGenericType && item.TypeArguments.Count() == 1 && item.Name == interfaceName)
@@ -168,15 +167,15 @@ public static class RoslynExtensions
         {
             return true; //act like its known (no need to scan through to support my custom stuff
         }
-        HashSet<string> names = new()
-        {
+        HashSet<string> names =
+        [
             "String", "Nullable", "Decimal", "Byte",
             "Double", "Int16", "Int32", "Int64",
             "SByte", "Single", "UInt16", "UInt32",
             "UInt64", "Boolean", "Char", "Object",
             "Guid","DateTime", "DateTimeOffset",
             "DateOnly", "TimeOnly"
-        };
+        ];
         return names.Contains(symbol.Name);
     }
     public static bool IsSimpleType(this ITypeSymbol symbol)
@@ -234,7 +233,7 @@ public static class RoslynExtensions
         {
             attributeName = $"{attributeName}Attribute";
         }
-        BasicList<AttributeData> output = new();
+        BasicList<AttributeData> output = [];
         foreach (var attribute in symbol.GetAttributes())
         {
             if (attribute.AttributeClass is null)
@@ -360,7 +359,7 @@ public static class RoslynExtensions
     }
     public static string RemoveAttribute(this string content, string attributeName)
     {
-        content = content.Replace($"    [{attributeName}]{Environment.NewLine}", "");
+        content = content.Replace($"    [{attributeName}]\r\n", "");
         return content;
     }
     public static void ReportPartialClassRequired(this GeneratorExecutionContext context, ClassDeclarationSyntax clazz, string id = "PartialCode")
@@ -405,11 +404,11 @@ public static class RoslynExtensions
         var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
         if (firsts.Count == 0)
         {
-            return new();
+            return [];
         }
         if (firsts.Count > 1)
         {
-            return new();
+            return [];
         }
         return firsts.Single().Members.OfType<ClassDeclarationSyntax>().ToBasicList();
     }
@@ -425,11 +424,11 @@ public static class RoslynExtensions
         var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
         if (firsts.Count == 0)
         {
-            return new();
+            return [];
         }
         if (firsts.Count > 1)
         {
-            return new();
+            return [];
         }
         return firsts.Single().Members.OfType<T>().ToBasicList();
     }
@@ -444,11 +443,11 @@ public static class RoslynExtensions
         var firsts = unit.Members.OfType<FileScopedNamespaceDeclarationSyntax>().ToList();
         if (firsts.Count == 0)
         {
-            return new();
+            return [];
         }
         if (firsts.Count > 1)
         {
-            return new();
+            return [];
         }
         return firsts.Single().Members.ToBasicList();
     }
@@ -566,8 +565,7 @@ public static class RoslynExtensions
     //new extensions.  this helps with getting all public properties and methods.
     private static IEnumerable<INamedTypeSymbol> GetAllParents(this INamedTypeSymbol symbol)
     {
-        BasicList<INamedTypeSymbol> output = new();
-        output.Add(symbol);
+        BasicList<INamedTypeSymbol> output = [symbol];
         INamedTypeSymbol temps = symbol;
         do
         {
@@ -624,7 +622,7 @@ public static class RoslynExtensions
         //since everything goes back to object, once something inherits from object, then that is all of them.
         //also, since the inheritance is only single inheritance, then should be okay.
         var symbols = symbol.GetAllParents();
-        BasicList<IPropertySymbol> output = new();
+        BasicList<IPropertySymbol> output = [];
         foreach (var s in symbols)
         {
             var list = s.GetMembers().OfType<IPropertySymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public);
@@ -656,7 +654,7 @@ public static class RoslynExtensions
     public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol, string attributeName)
     {
         var symbols = symbol.GetAllParents();
-        BasicList<IMethodSymbol> output = new();
+        BasicList<IMethodSymbol> output = [];
         foreach (var s in symbols)
         {
             var list = s.GetMembers().OfType<IMethodSymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public && xx.MethodKind == MethodKind.Ordinary && xx.HasAttribute(attributeName));
@@ -673,7 +671,7 @@ public static class RoslynExtensions
     public static BasicList<IMethodSymbol> GetAllPublicMethods(this INamedTypeSymbol symbol)
     {
         var symbols = symbol.GetAllParents();
-        BasicList<IMethodSymbol> output = new();
+        BasicList<IMethodSymbol> output = [];
         foreach (var s in symbols)
         {
             var list = s.GetMembers().OfType<IMethodSymbol>().Where(xx => xx.DeclaredAccessibility == Accessibility.Public && xx.MethodKind == MethodKind.Ordinary);
@@ -687,7 +685,7 @@ public static class RoslynExtensions
         var firsts = node.FirstAncestorOrSelf<CompilationUnitSyntax>();
         return compilation.GetSemanticModel(firsts!.SyntaxTree);
     }
-    public static string GetStringFromList(this IEnumerable<string> list) => string.Join(Environment.NewLine, list);
+    public static string GetStringFromList(this IEnumerable<string> list) => string.Join("\r\n", list);
     //this means in any case where we need specifc method with specific parameters expected, then can do it.
     //if there are too many overloaded, will require rethinking though.
     public static IMethodSymbol? GetSpecificMethod(this INamedTypeSymbol symbol, string methodNameExpected, int parametersExpected)

@@ -28,9 +28,7 @@ internal static class Utils
                 w.Close();
                 w = null;
             }
-
-            if (!(fs == null))
-                fs.Close();
+            fs?.Close();
         }
         return to_ret;
     }
@@ -51,34 +49,5 @@ internal static class Utils
         {
         }
         return to_ret;
-    }
-    public static bool DeleteFile(string file_name)
-    {
-        try
-        {
-            if (FileExists(file_name))
-            {
-                File.Delete(file_name);
-                return !FileExists(file_name);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("ParserUtils::DeleteFile(" + file_name + ") - got exception [" + ex.Source + ", " + ex.Message + "]");
-        }
-
-        return false;
-    }
-    public static bool FileExists(string file_name)
-    {
-        try
-        {
-            return File.Exists(file_name);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("ParserUtils::FileExists(" + file_name + ") - got exception [" + ex.Source + ", " + ex.Message + "]");
-        }
-        return false;
     }
 }

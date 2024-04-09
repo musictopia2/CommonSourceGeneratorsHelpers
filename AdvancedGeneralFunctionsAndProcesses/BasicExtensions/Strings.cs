@@ -8,11 +8,11 @@ public static class Strings
 {
     public static string BackSpaceRemoveEnding0s(this string payLoad)
     {
-        string output = payLoad.TrimEnd(new char[] { '0' });
+        string output = payLoad.TrimEnd(['0']);
         return output;
     }
 
-    private static string _monthReplace = "";
+    //private static string _monthReplace = "";
     public static BasicList<string> CommaDelimitedList(string payLoad)
     {
         return payLoad.Split(",").ToBasicList(); //comma alone.
@@ -23,18 +23,19 @@ public static class Strings
     }
     public static int FindMonthInStringLine(this string thisStr) // will return a number  this will assume that there is never a case where 2 months appear
     {
-        BasicList<string> possList = new() { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+        BasicList<string> possList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         int possNum;
         possNum = 0;
-        _monthReplace = "";
+        string monthReplace;
         int currentNum;
         foreach (var thisPoss in possList)
+        {
             if (thisStr.Contains(thisPoss) == true)
             {
                 currentNum = thisPoss.GetMonthID();
                 if (currentNum > 0)
                 {
-                    _monthReplace = thisPoss;
+                    monthReplace = thisPoss;
                     if (possNum > 0)
                     {
                         throw new CustomBasicException("There should not have been 2 months in the same line.  Rethink");
@@ -42,6 +43,7 @@ public static class Strings
                     possNum = currentNum;
                 }
             }
+        }
         return possNum;
     }
     public static int GetMonthID(this string monthString)
@@ -67,10 +69,10 @@ public static class Strings
     }
     public static BasicList<string> GetSentences(this string sTextToParse)
     {
-        BasicList<string> al = new();
+        BasicList<string> al = [];
         string sTemp = sTextToParse;
-        sTemp = sTemp.Replace(Environment.NewLine, " ");
-        string[] customSplit = new[] { ".", "?", "!", ":" };
+        sTemp = sTemp.Replace("\r\n", " ");
+        string[] customSplit = [".", "?", "!", ":"];
         var splits = sTemp.Split(customSplit, StringSplitOptions.RemoveEmptyEntries).ToList();
         int pos;
         foreach (var thisSplit in splits)
@@ -265,7 +267,7 @@ public static class Strings
     public static BasicList<string> Split(this string thisStr, string words)
     {
         int oldCount = thisStr.Length;
-        BasicList<string> tempList = new();
+        BasicList<string> tempList = [];
         do
         {
             if (thisStr.Contains(words) == false)
@@ -397,7 +399,7 @@ public static class Strings
         {
             info = info.Replace("_", " ");
         }
-        TextInfo currentTextInfo = CultureInfo.CurrentCulture.TextInfo;
+        TextInfo currentTextInfo = CultureInfo.InvariantCulture.TextInfo;
         string output = currentTextInfo.ToTitleCase(info);
         return output;
     }
@@ -418,7 +420,9 @@ public static class Strings
                         isSpaceOrDot = false;
                     }
                     else
+                    {
                         tempStr += char.ToLower(info[i]);
+                    }
                 }
                 else
                 {

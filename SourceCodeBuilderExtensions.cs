@@ -1,6 +1,5 @@
 ﻿using CommonBasicLibraries.CollectionClasses;
 using Microsoft.CodeAnalysis;
-
 namespace CommonSourceGeneratorsHelpers;
 public static class SourceCodeBuilderExtensions
 {

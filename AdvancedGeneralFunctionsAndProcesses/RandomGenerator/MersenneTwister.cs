@@ -49,21 +49,21 @@ internal class MersenneTwister
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
+        {
             return;
-
+        }
         if (disposing)
         {
             _mt = null!;
             _mag01 = null!;
         }
-
         _disposed = true;
     }
 
     private void Init()
     {
         _mt = new uint[_n];
-        _mag01 = new uint[] { 0, _matrixA };
+        _mag01 = [0, _matrixA];
         _mti = _n + 1;
     }
 
@@ -75,9 +75,10 @@ internal class MersenneTwister
     {
         _mt![0] = seed;
         for (_mti = 1; _mti < _n; _mti++)
+        {
             _mt[_mti] = 1812433253 * (_mt[_mti - 1] ^ _mt[_mti - 1] >> 30) + _mti;
+        }
     }
-
     public uint GenRandInt32()
     {
         uint y;

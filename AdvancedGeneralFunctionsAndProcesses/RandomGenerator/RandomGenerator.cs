@@ -127,7 +127,7 @@ public partial class RandomGenerator : IRandomGenerator
         int oldC;
         oldC = startingNumber - 1;
         int counts;
-        BasicList<int> oldList = new();
+        BasicList<int> oldList = [];
         int preC = 0;
         int setC = 0;
         if (previousList != null)
@@ -194,7 +194,7 @@ public partial class RandomGenerator : IRandomGenerator
             }
             if (oldList.Count == 0)
             {
-                return new BasicList<int> { startingNumber };
+                return [startingNumber];
             }
             int possibleItem = 0;
             foreach (int index in tempList)
@@ -214,9 +214,9 @@ public partial class RandomGenerator : IRandomGenerator
             }
             if (setToContinue == null)
             {
-                return new() { possibleItem }; //should not bother doing the random items because there is only one.
+                return [possibleItem]; //should not bother doing the random items because there is only one.
             }
-            BasicList<int> finalList = new();
+            BasicList<int> finalList = [];
             if (putBefore == true)
             {
                 finalList.AddRange(setToContinue);
@@ -229,7 +229,7 @@ public partial class RandomGenerator : IRandomGenerator
             }
             return finalList;
         }
-        HashSet<int> rndIndexes = new();
+        HashSet<int> rndIndexes = [];
         for (int i = 1; i <= startingNumber - 1; i++)
         {
             rndIndexes.Add(i);
@@ -301,7 +301,7 @@ public partial class RandomGenerator : IRandomGenerator
             throw new ArgumentOutOfRangeException("MaximumNumber");
         }
         DoRandomize();
-        BasicList<int> finalList = new();
+        BasicList<int> finalList = [];
         int x;
         var loopTo = howMany;
         for (x = 1; x <= loopTo; x++)
@@ -314,10 +314,10 @@ public partial class RandomGenerator : IRandomGenerator
     }
     private static BasicList<int> GetPossibleIntegerList(int minValue, int maximumValue, int increments)
     {
-        BasicList<int> newList = new()
-        {
+        BasicList<int> newList =
+        [
             minValue
-        };
+        ];
         int upTo;
         upTo = minValue;
         do
@@ -343,7 +343,7 @@ public partial class RandomGenerator : IRandomGenerator
     public string GenerateRandomPassword(RandomPasswordParameterClass thisPassword)
     {
         DoRandomize();
-        BasicList<int> tempResults = new();
+        BasicList<int> tempResults = [];
         int x;
         int picked;
         if (thisPassword.HowManyNumbers > 0)
@@ -464,7 +464,7 @@ public partial class RandomGenerator : IRandomGenerator
     }
     public BasicList<string> GetSeveralUniquePeople(int howMany)
     {
-        HashSet<string> firstList = new();
+        HashSet<string> firstList = [];
         do
         {
             firstList.Add(NextAnyName());
@@ -479,10 +479,10 @@ public partial class RandomGenerator : IRandomGenerator
     {
         var range = types switch
         {
-            EnumAgeRanges.Child => new[] { 1, 12 },
-            EnumAgeRanges.Teen => new[] { 13, 19 },
-            EnumAgeRanges.Senior => new[] { 65, 100 },
-            EnumAgeRanges.All => new[] { 1, 100 },
+            EnumAgeRanges.Child => [1, 12],
+            EnumAgeRanges.Teen => [13, 19],
+            EnumAgeRanges.Senior => [65, 100],
+            EnumAgeRanges.All => [1, 100],
             _ => new[] { 18, 65 },
         };
         return GetRandomNumber(range[1], range[0]);
@@ -718,9 +718,13 @@ public partial class RandomGenerator : IRandomGenerator
     {
         BasicList<string> listToUse;
         if (isFemale == false)
+        {
             listToUse = _data.FirstNamesFemale;
+        }
         else
+        {
             listToUse = _data.FirstNamesMale;
+        }
         listToUse._rs = this;
         return listToUse.GetRandomItem();
     }
@@ -732,7 +736,7 @@ public partial class RandomGenerator : IRandomGenerator
     }
     public string NextGender()
     {
-        BasicList<string> thisList = new() { "Male", "Female" };
+        BasicList<string> thisList = ["Male", "Female"];
         thisList._rs = this;
         return thisList.GetRandomItem();
     }

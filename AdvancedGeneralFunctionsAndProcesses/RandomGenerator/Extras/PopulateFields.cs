@@ -5,7 +5,7 @@ public partial class RandomGenerator
     public static bool UseFullName { get; set; } //if true, then will make sure you get real names.
     public BasicList<ITestPerson> GetTestPeopleList<T>(int HowMany, EnumAgeRanges DefaultAge = EnumAgeRanges.Adult) where T : ITestPerson, new()
     {
-        BasicList<ITestPerson> output = new();
+        BasicList<ITestPerson> output = [];
         for (int i = 0; i < HowMany; i++)
         {
             output.Add(GetTestSinglePerson<T>(DefaultAge));
@@ -15,7 +15,6 @@ public partial class RandomGenerator
     public ITestPerson GetTestSinglePerson<T>(EnumAgeRanges defaultAge = EnumAgeRanges.Adult) where T : ITestPerson, new()
     {
         ITestPerson output = new T();
-
         if (UseFullName)
         {
             FullNameClass full = NextFullName();

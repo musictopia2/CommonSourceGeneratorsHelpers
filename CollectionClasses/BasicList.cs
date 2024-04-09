@@ -97,7 +97,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public IBasicList<T> FindAll(Predicate<T> match)
     {
-        BasicList<T> output = new();
+        BasicList<T> output = [];
         foreach (T thisItem in PrivateList)
         {
             if (match(thisItem) == true)
@@ -195,7 +195,9 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
         foreach (T thisItem in PrivateList)
         {
             if (match1.Invoke(thisItem) == true)
+            {
                 allAction.Invoke(thisItem);
+            }
         }
         foreach (T thisItem in PrivateList)
         {
@@ -216,7 +218,9 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
         foreach (T thisItem in PrivateList)
         {
             if (match.Invoke(thisItem) == true)
+            {
                 action.Invoke(thisItem);
+            }
         }
     }
     public async Task ForConditionalItemsAsync(Predicate<T> match, ActionAsync<T> action)
@@ -224,7 +228,9 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
         foreach (T thisItem in PrivateList)
         {
             if (match.Invoke(thisItem) == true)
+            {
                 await action.Invoke(thisItem);
+            }
         }
     }
     public async Task ForEachAsync(ActionAsync<T> action)
@@ -262,7 +268,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     {
         _rs = RandomHelpers.GetRandomGenerator();
         BasicList<int> rList = _rs.GenerateRandomList(PrivateList.Count, howManyInList);
-        BasicList<T> output = new();
+        BasicList<T> output = [];
         foreach (var index in rList)
         {
             output.Add(PrivateList[index - 1]);
@@ -278,7 +284,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     {
         _rs = RandomHelpers.GetRandomGenerator();
         BasicList<int> rList = _rs.GenerateRandomList(PrivateList.Count, howMany);
-        List<T> list = new();
+        List<T> list = [];
         foreach (int index in rList)
         {
             list.Add(PrivateList[index - 1]);
@@ -287,7 +293,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public IBasicList<T> GetConditionalItems(Predicate<T> match)
     {
-        BasicList<T> output = new();
+        BasicList<T> output = [];
         foreach (var item in PrivateList)
         {
             if (match.Invoke(item))
@@ -307,7 +313,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public IBasicList<T> GetRange(int index, int count)
     {
-        BasicList<T> output = new();
+        BasicList<T> output = [];
         for (int i = index; i < count; i++)
         {
             output.Add(PrivateList[i]);
@@ -341,7 +347,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public IBasicList<T> RemoveAllAndObtain(Predicate<T> match)
     {
-        BasicList<T> output = new();
+        BasicList<T> output = [];
         foreach (var item in PrivateList)
         {
             if (match(item))
@@ -357,7 +363,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public void RemoveAllOnly(Predicate<T> match)
     {
-        List<T> tempList = new();
+        List<T> tempList = [];
         foreach (T item in PrivateList)
         {
             if (match(item) == true)
@@ -372,7 +378,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public void KeepConditionalItems(Predicate<T> match)
     {
-        List<T> tempList = new();
+        List<T> tempList = [];
         foreach (T item in PrivateList)
         {
             if (match(item) == false)
@@ -454,7 +460,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
         }
         _rs = RandomHelpers.GetRandomGenerator();
         BasicList<int> thisList = _rs.GenerateRandomList(PrivateList.Count);
-        List<T> rList = new();
+        List<T> rList = [];
         foreach (int index in thisList)
         {
             rList.Add(PrivateList[index - 1]); //because 0 based.
@@ -466,7 +472,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     {
         _rs = RandomHelpers.GetRandomGenerator();
         BasicList<int> thisList = _rs.GenerateRandomList(PrivateList.Count, howMany);
-        List<T> rList = new();
+        List<T> rList = [];
         foreach (int index in thisList)
         {
             rList.Add(PrivateList[index - 1]);
@@ -559,7 +565,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public void RemoveSeveralConditionalItems(BasicList<ConditionActionPair<T>> thisList)
     {
-        BasicList<T> rList = new();
+        BasicList<T> rList = [];
         thisList.ForEach(firstItem =>
         {
             if (Exists(firstItem.Predicate) == true)
@@ -585,7 +591,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public IBasicList<U> ConvertAll<U>(Converter<T, U> converter)
     {
-        BasicList<U> output = new();
+        BasicList<U> output = [];
         output.Capacity = PrivateList.Count;
         for (int i = 0; i < PrivateList.Count; i++)
         {

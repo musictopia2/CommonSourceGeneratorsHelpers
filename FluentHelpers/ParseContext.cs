@@ -1,12 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 namespace CommonSourceGeneratorsHelpers.FluentHelpers;
-internal sealed class ParseContext
+internal sealed class ParseContext(Compilation compilation, SyntaxNode syntax)
 {
-    public Compilation Compilation { get; }
-    public SemanticModel SemanticModel { get; }
-    public ParseContext(Compilation compilation, SyntaxNode syntax)
-    {
-        Compilation = compilation;
-        SemanticModel = syntax.GetSemanticModel(compilation);
-    }
+    public Compilation Compilation { get; } = compilation;
+    public SemanticModel SemanticModel { get; } = syntax.GetSemanticModel(compilation);
 }

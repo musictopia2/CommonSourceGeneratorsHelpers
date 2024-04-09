@@ -340,7 +340,7 @@ public static class Colors
     public static BasicList<E> GetColorList<E>(this E thisEnum) where E : Enum
     {
         var firsts = Enum.GetValues(thisEnum.GetType());
-        BasicList<E> output = new();
+        BasicList<E> output = [];
         foreach (var thisItem in firsts)
         {
             if (thisItem.ToString()!.HasColor<E>() == true)

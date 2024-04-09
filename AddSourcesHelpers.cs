@@ -5,53 +5,32 @@ internal interface IAddSource
 {
     void AddSource(string path, string text);
 }
-internal class IncrementalExecuteAddSource : IAddSource
+internal class IncrementalExecuteAddSource(SourceProductionContext context) : IAddSource
 {
-    private readonly SourceProductionContext _context;
-    public IncrementalExecuteAddSource(SourceProductionContext context)
-    {
-        _context = context;
-    }
     void IAddSource.AddSource(string path, string text)
     {
-        _context.AddSource(path, text);
+        context.AddSource(path, text);
     }
 }
-internal class IncrementalInitAddSource : IAddSource
+internal class IncrementalInitAddSource(IncrementalGeneratorPostInitializationContext context) : IAddSource
 {
-    private readonly IncrementalGeneratorPostInitializationContext _context;
-    public IncrementalInitAddSource(IncrementalGeneratorPostInitializationContext context)
-    {
-        _context = context;
-    }
     void IAddSource.AddSource(string path, string text)
     {
-        _context.AddSource(path, text);
+        context.AddSource(path, text);
     }
 }
-internal class OldGeneratorAddSource : IAddSource
+internal class OldGeneratorAddSource(GeneratorExecutionContext context) : IAddSource
 {
-    private readonly GeneratorExecutionContext _context;
-    public OldGeneratorAddSource(GeneratorExecutionContext context)
-    {
-        _context = context;
-    }
     void IAddSource.AddSource(string path, string text)
     {
-        _context.AddSource(path, text);
+        context.AddSource(path, text);
     }
 }
-
-internal class OldGeneratorPostInitializationAddSource : IAddSource
+internal class OldGeneratorPostInitializationAddSource(GeneratorPostInitializationContext context) : IAddSource
 {
-    private readonly GeneratorPostInitializationContext _context;
-    public OldGeneratorPostInitializationAddSource(GeneratorPostInitializationContext context)
-    {
-        _context = context;
-    }
     void IAddSource.AddSource(string path, string text)
     {
-        _context.AddSource(path, text);
+        context.AddSource(path, text);
     }
 }
 internal static class Extensions

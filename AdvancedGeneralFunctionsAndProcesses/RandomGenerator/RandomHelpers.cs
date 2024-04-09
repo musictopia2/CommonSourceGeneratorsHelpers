@@ -23,6 +23,5 @@ public static class RandomHelpers
             _rs = new RandomGenerator(_data);
         }
         return _rs;
-    }
-    
+    }   
 }

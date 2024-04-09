@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace CommonSourceGeneratorsHelpers.FluentHelpers;
 internal class ParseUtils
 {
-    private static readonly List<CallInfo> EmptyCallsList = new();
+    private static readonly List<CallInfo> _emptyCallsList = [];
     internal static IReadOnlyList<CallInfo> FindCallsOfMethodWithName(
         ParseContext context, SyntaxNode node, string methodName)
     {
@@ -70,7 +70,7 @@ internal class ParseUtils
     {
         if (optional && call.ArgumentList.Arguments.Count <= 0)
         {
-            return EmptyCallsList;
+            return _emptyCallsList;
         }
         int toUse;
         if (call.ArgumentList.Arguments.Count() < argumentIndex + 1)

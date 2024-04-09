@@ -16,15 +16,21 @@ public class HtmlParser
         string tempStr;
         tempStr = Body;
         if (tempStr == "")
+        {
             throw new CustomBasicException("Blank list");
+        }
         var tGetList = new BasicList<string>();
         do
         {
             if (DoesExist(strFirst) == false)
             {
                 if (tGetList.Count == 0)
+                {
                     if (showErrors == true)
+                    {
                         throw new ParserException("There are no items on the list", EnumMethod.GetList) { OriginalBody = tempStr, RemainingHtml = Body, FirstTag = strFirst };
+                    }
+                }
                 tGetList.Add(Body);
                 Body = tempStr;
                 return tGetList;
@@ -39,7 +45,9 @@ public class HtmlParser
         string tempStr;
         tempStr = Body;
         if (tempStr == "")
+        {
             throw new CustomBasicException("Blank list");
+        }
         var tGetList = new BasicList<string>();
         string thisItem;
         do
@@ -47,8 +55,12 @@ public class HtmlParser
             if (DoesExist(strFirst, strSecond) == false)
             {
                 if (tGetList.Count == 0)
+                {
                     if (showErrors == true)
+                    {
                         throw new ParserException("There are no items on the list", EnumMethod.GetList) { OriginalBody = tempStr, RemainingHtml = Body, FirstTag = strFirst, SecondTag = strSecond };
+                    }
+                }
                 Body = tempStr;
                 return tGetList;
             }

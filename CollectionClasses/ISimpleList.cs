@@ -12,7 +12,6 @@ public interface ISimpleList<T> : IEnumerable<T>, ICountCollection
     bool Contains(T item);
     T? Find(Predicate<T> match); //the first one it finds, will be this one.
     T FindOnlyOne(Predicate<T> match); //this means it must find only one item.
-                                       //this can be iffy.
     IBasicList<T> FindAll(Predicate<T> match);
     int FindFirstIndex(Predicate<T> match);
     int FindFirstIndex(int startIndex, Predicate<T> match);

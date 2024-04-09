@@ -12,17 +12,3 @@ public class MySourceGenerator : IIncrementalGenerator
         });
     }
 }
-
-//[Generator]
-//public class MySourceGenerator : ISourceGenerator
-//{
-//    public void Execute(GeneratorExecutionContext context)
-//    {
-//        context.CreateCustomSource().BuildSourceCode();
-//    }
-
-//    public void Initialize(GeneratorInitializationContext context)
-//    {
-
-//    }
-//}
