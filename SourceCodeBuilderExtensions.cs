@@ -15,14 +15,14 @@ public static class SourceCodeBuilderExtensions
     }
     public static IWriter ConsoleWriteLine(this IWriter w, Action<IWriter> message)
     {
-        w.Write("Console.WriteLine(")
+        w.Write("System.Console.WriteLine(")
             .AppendDoubleQuote(message)
             .Write(");");
         return w;
     }
     public static IWriter ConsoleWriteLine(this IWriter w, string message)
     {
-        w.Write("Console.WriteLine(")
+        w.Write("System.Console.WriteLine(")
             .AppendDoubleQuote(message)
             .Write(");");
         return w;
