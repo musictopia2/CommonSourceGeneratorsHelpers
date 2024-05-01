@@ -13,5 +13,6 @@ public enum EnumSimpleTypeCategory
     DateTime,
     DateOnly,
     Char,
-    TimeOnly
+    TimeOnly,
+    DateTimeOffset
 }
