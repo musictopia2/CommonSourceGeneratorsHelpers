@@ -14,5 +14,7 @@ public enum EnumSimpleTypeCategory
     DateOnly,
     Char,
     TimeOnly,
-    DateTimeOffset
+    TimeSpan,
+    DateTimeOffset,
+    Byte
 }

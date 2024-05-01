@@ -834,6 +834,14 @@ public static class RoslynExtensions
         {
             return EnumSimpleTypeCategory.Char;
         }
+        else if (type.Name == "TimeSpan")
+        {
+            return EnumSimpleTypeCategory.TimeSpan;
+        }
+        else if (type.Name == "Byte")
+        {
+            return EnumSimpleTypeCategory.Byte; //this may be needed sometimes too.
+        }
         else
         {
             return EnumSimpleTypeCategory.None; //can show errors showing not supported.
@@ -861,59 +869,6 @@ public static class RoslynExtensions
         output.UnderlyingSymbolName = type.Name;
         output.ContainingNameSpace = type.ContainingNamespace.ToDisplayString();
         output.PropertyName = symbol.Name;
-        //if (type.TypeKind == TypeKind.Enum)
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.StandardEnum;
-        //}
-        //else if (type.Name.StartsWith("Enum"))
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.CustomEnum;
-        //}
-        //else if (type.Name == "Int32")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Int;
-        //}
-        //else if (type.Name == "Boolean")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Bool;
-        //}
-        //else if (type.Name == "Decimal")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Decimal;
-        //}
-        //else if (type.Name == "Double")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Double;
-        //}
-        //else if (type.Name == "Float" || type.Name == "Single")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Float;
-        //}
-        //else if (type.Name == "DateOnly")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.DateOnly;
-        //}
-        //else if (type.Name == "TimeOnly")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.TimeOnly;
-        //}
-        //else if (type.Name == "DateTime")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.DateTime;
-        //}
-        //else if (type.Name == "String")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.String;
-        //}
-        //else if (type.Name == "Char")
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.Char;
-        //}
-        //else
-        //{
-        //    output.VariableCustomCategory = EnumSimpleTypeCategory.None; //can show errors showing not supported.
-        //    //most likely, if none of those, then 
-        //}
         return output;
     }
 }
