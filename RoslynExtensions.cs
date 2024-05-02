@@ -780,6 +780,26 @@ public static class RoslynExtensions
         type = (INamedTypeSymbol)temp.TypeArguments[0];
         return type;
     }
+    public static string GetParseMethodName(this EnumSimpleTypeCategory category)
+    {
+        if (category == EnumSimpleTypeCategory.DateOnly 
+            || category == EnumSimpleTypeCategory.DateTime
+            || category == EnumSimpleTypeCategory.DateTimeOffset
+            || category == EnumSimpleTypeCategory.TimeSpan
+            || category == EnumSimpleTypeCategory.TimeOnly)
+        {
+            return category.ToString();
+        }
+        if (category == EnumSimpleTypeCategory.StandardEnum || category == EnumSimpleTypeCategory.CustomEnum)
+        {
+            return "";
+        }
+        if (category == EnumSimpleTypeCategory.None)
+        {
+            return "";
+        }
+        return category.ToString().ToLower();
+    }
     public static EnumSimpleTypeCategory GetVariableCategory(this ITypeSymbol symbol)
     {
         INamedTypeSymbol type = symbol.GetUnderlyingSymbol();
