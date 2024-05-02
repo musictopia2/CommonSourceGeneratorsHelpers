@@ -768,20 +768,21 @@ public static class RoslynExtensions
         output.Namespace = symbol.ContainingNamespace.ToDisplayString();
         return output;
     }
-    //try this way.
+    public static INamedTypeSymbol GetUnderlyingSymbol(this ITypeSymbol symbol)
+    {
+        if (symbol.Name != "Nullable")
+        {
+            return (INamedTypeSymbol) symbol;
+        }
+        INamedTypeSymbol type;
+        INamedTypeSymbol temp;
+        temp = (INamedTypeSymbol)symbol;
+        type = (INamedTypeSymbol)temp.TypeArguments[0];
+        return type;
+    }
     public static EnumSimpleTypeCategory GetVariableCategory(this ITypeSymbol symbol)
     {
-        INamedTypeSymbol type;
-        if (symbol.Name == "Nullable")
-        {
-            INamedTypeSymbol temp;
-            temp = (INamedTypeSymbol)symbol;
-            type = (INamedTypeSymbol)temp.TypeArguments[0];
-        }
-        else
-        {
-            type = (INamedTypeSymbol)symbol;
-        }
+        INamedTypeSymbol type = symbol.GetUnderlyingSymbol();
         if (type.TypeKind == TypeKind.Enum)
         {
             return EnumSimpleTypeCategory.StandardEnum;
