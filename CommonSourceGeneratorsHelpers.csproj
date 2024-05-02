@@ -6,7 +6,7 @@
 		<LangVersion>latest</LangVersion>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<ImplicitUsings>true</ImplicitUsings>
-		<Version>2.0.69</Version>
+		<Version>2.0.70</Version>
 		<Authors>musictopia</Authors>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<PackageProjectUrl>https://github.com/musictopia2/CommonSourceGeneratorsHelpers</PackageProjectUrl>
