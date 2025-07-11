@@ -11,6 +11,15 @@ internal static class IncrementalGeneratorInitializationContextExtensions
        string baseClassFullName,
        string boolPropertyName,
        bool expectedValue,
+       Func<ImmutableHashSet<ClassDeclarationSyntax>, Compilation, ImmutableHashSet<TResult>> processClasses)
+    {
+        return context.RunFilteredGenerator(baseClassFullName, boolPropertyName, expectedValue, false, processClasses); //usually false
+    }
+    public static IncrementalValueProvider<ImmutableArray<TResult>> RunFilteredGenerator<TResult>(
+       this IncrementalGeneratorInitializationContext context,
+       string baseClassFullName,
+       string boolPropertyName,
+       bool expectedValue,
        bool defaultBoolValue,
        Func<ImmutableHashSet<ClassDeclarationSyntax>, Compilation, ImmutableHashSet<TResult>> processClasses)
     {
