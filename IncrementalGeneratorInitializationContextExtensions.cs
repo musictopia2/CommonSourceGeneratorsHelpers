@@ -10,6 +10,7 @@ internal static class IncrementalGeneratorInitializationContextExtensions
        this IncrementalGeneratorInitializationContext context,
        string baseClassFullName,
        string boolPropertyName,
+       bool expectedValue,
        bool defaultBoolValue,
        Func<ImmutableHashSet<ClassDeclarationSyntax>, Compilation, ImmutableHashSet<TResult>> processClasses)
     {
@@ -30,7 +31,7 @@ internal static class IncrementalGeneratorInitializationContextExtensions
             ImmutableArray<ClassDeclarationSyntax> classesArray = compAndClasses.Right;
             var classesSet = classesArray.ToImmutableHashSet();
 
-            var filteredClasses = FilterByBoolProperty(classesSet, compilation, boolPropertyName, defaultBoolValue);
+            var filteredClasses = FilterByBoolProperty(classesSet, compilation, boolPropertyName, expectedValue, defaultBoolValue);
 
             return processClasses(filteredClasses, compilation);
         });
@@ -52,6 +53,7 @@ internal static class IncrementalGeneratorInitializationContextExtensions
         ImmutableHashSet<ClassDeclarationSyntax> classes,
         Compilation compilation,
         string boolPropertyName,
+        bool expectedValue,
         bool defaultBoolValue)
     {
         var builder = ImmutableHashSet.CreateBuilder<ClassDeclarationSyntax>();
@@ -80,7 +82,7 @@ internal static class IncrementalGeneratorInitializationContextExtensions
                 propValue = val ?? defaultBoolValue;
             }
 
-            if (propValue == defaultBoolValue)
+            if (propValue == expectedValue)
             {
                 builder.Add(cls);
             }
