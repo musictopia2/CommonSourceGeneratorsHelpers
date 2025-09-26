@@ -875,18 +875,48 @@ public static class RoslynExtensions
         T output = new();
         output.VariableCustomCategory = symbol.Type.GetVariableCategory();
         INamedTypeSymbol type;
-        if (symbol.Type.Name == "Nullable")
+        ITypeSymbol typeSymbol = symbol.Type;
+
+        // First, check if it's nullable
+        if (typeSymbol.NullableAnnotation == NullableAnnotation.Annotated)
         {
             output.Nullable = true;
-            INamedTypeSymbol temp;
-            temp = (INamedTypeSymbol)symbol.Type;
-            type = (INamedTypeSymbol)temp.TypeArguments[0];
+
+            // If it's Nullable<T>, extract T
+            if (typeSymbol is INamedTypeSymbol namedType &&
+                namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+            {
+                // Get the underlying T from Nullable<T>
+                type = (INamedTypeSymbol)namedType.TypeArguments[0];
+            }
+            else if (typeSymbol is INamedTypeSymbol namedReferenceType)
+            {
+                // Nullable reference type (e.g., string?)
+                type = namedReferenceType;
+            }
+            else
+            {
+                // Fallback just in case
+                type = (INamedTypeSymbol)typeSymbol;
+            }
         }
         else
         {
             output.Nullable = false;
-            type = (INamedTypeSymbol) symbol.Type;
+            type = (INamedTypeSymbol)typeSymbol;
         }
+        //if (symbol.Type.Name == "Nullable")
+        //{
+        //    output.Nullable = true;
+        //    INamedTypeSymbol temp;
+        //    temp = (INamedTypeSymbol)symbol.Type;
+        //    type = (INamedTypeSymbol)temp.TypeArguments[0];
+        //}
+        //else
+        //{
+        //    output.Nullable = false;
+        //    type = (INamedTypeSymbol) symbol.Type;
+        //}
         output.UnderlyingSymbolName = type.Name;
         output.ContainingNameSpace = type.ContainingNamespace.ToDisplayString();
         output.PropertyName = symbol.Name;

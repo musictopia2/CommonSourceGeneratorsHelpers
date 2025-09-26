@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using CommonBasicLibraries.CollectionClasses;
+using System.Text;
 namespace CommonSourceGeneratorsHelpers;
 public interface IWriter
 {
@@ -21,6 +22,7 @@ public interface ICodeBlock
     ICodeBlock WriteCodeBlock(Action<ICodeBlock> action, bool endSemi = false);
     ICodeBlock WriteLambaBlock(Action<ICodeBlock> action); //this will end with semi and the )
     public string GetSingleText(Action<IWriter> action);
+    ICodeBlock WriteListBlock(BasicList<string> items);
 }
 public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
 {
@@ -278,6 +280,22 @@ public class SourceCodeStringBuilder : IWriter, ICodeBlock, ICommentBlock
         Write("});"); //since something else has blank line, no need for blank line now.
         //try this way when we need the final ) statement.  sometimes needed when we have to do lamda statement with functs.
         //needed when i can't do one liners to satisfy the lamda expressions for custom functions.
+        return this;
+    }
+    public ICodeBlock WriteListBlock(BasicList<string> items)
+    {
+        Indent();
+        Write("[");
+        IncreaseIndent().EnsureEmptyLine();
+        for (int i = 0; i < items.Count; i++)
+        {
+            var item = items[i];
+            string comma = i == items.Count - 1 ? "" : ",";
+            WriteLine($"\"{item}\"{comma}");
+        }
+        DecreaseIndent().EnsureEmptyLine();
+        Indent();
+        Write("];");
         return this;
     }
     #endregion
