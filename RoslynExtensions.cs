@@ -922,29 +922,4 @@ public static class RoslynExtensions
         output.PropertyName = symbol.Name;
         return output;
     }
-    public static string GetParseMethod(this EnumSimpleTypeCategory category)
-    {
-        if (category == EnumSimpleTypeCategory.Bool
-            || category == EnumSimpleTypeCategory.Char
-            || category == EnumSimpleTypeCategory.Byte
-            || category == EnumSimpleTypeCategory.Int
-            || category == EnumSimpleTypeCategory.Decimal
-            || category == EnumSimpleTypeCategory.Double
-            || category == EnumSimpleTypeCategory.Float
-            )
-        {    
-            return category.ToString().ToLower();
-        }
-        if (category == EnumSimpleTypeCategory.DateOnly
-            || category == EnumSimpleTypeCategory.DateTime
-            || category == EnumSimpleTypeCategory.DateTimeOffset
-            || category == EnumSimpleTypeCategory.TimeSpan
-            || category == EnumSimpleTypeCategory.TimeOnly
-            )
-        {
-
-            return category.ToString();
-        }
-        return ""; //let it blow up when writing out the code in this case.
-    }
 }
