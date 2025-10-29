@@ -1,5 +1,4 @@
-﻿using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.RandomGenerator;
-using CommonBasicLibraries.BasicDataSettingsAndProcesses;
+﻿using CommonBasicLibraries.BasicDataSettingsAndProcesses;
 using System.Collections;
 using static CommonBasicLibraries.BasicDataSettingsAndProcesses.BasicDataFunctions;
 
@@ -67,7 +66,6 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     }
     public int Count => PrivateList.Count;
     bool ICollection<T>.IsReadOnly { get; }
-    internal IRandomGenerator? _rs;
     public void Add(T value)
     {
         PrivateList.Add(value);
@@ -244,53 +242,6 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     {
         return PrivateList.GetEnumerator();
     }
-    public T GetRandomItem()
-    {
-        return GetRandomItem(false);
-    }
-    public T GetRandomItem(bool removePrevious)
-    {
-        _rs = RandomHelpers.GetRandomGenerator();
-        int ask1 = _rs.GetRandomNumber(PrivateList.Count);
-        T output = PrivateList[ask1 - 1];
-        if (removePrevious)
-        {
-            RemoveItem(ask1 - 1);
-        }
-        return output;
-    }
-    public int GetSeed()
-    {
-        _rs = RandomHelpers.GetRandomGenerator();
-        return _rs!.GetSeed();
-    }
-    public IBasicList<T> GetRandomList(bool removePrevious, int howManyInList)
-    {
-        _rs = RandomHelpers.GetRandomGenerator();
-        BasicList<int> rList = _rs.GenerateRandomList(PrivateList.Count, howManyInList);
-        BasicList<T> output = [];
-        foreach (var index in rList)
-        {
-            output.Add(PrivateList[index - 1]);
-        }
-        if (removePrevious == false)
-        {
-            return output;
-        }
-        RemoveGivenList(output);
-        return output;
-    }
-    public void RemoveRandomItems(int howMany)
-    {
-        _rs = RandomHelpers.GetRandomGenerator();
-        BasicList<int> rList = _rs.GenerateRandomList(PrivateList.Count, howMany);
-        List<T> list = [];
-        foreach (int index in rList)
-        {
-            list.Add(PrivateList[index - 1]);
-        }
-        RemoveGivenList(list);
-    }
     public IBasicList<T> GetConditionalItems(Predicate<T> match)
     {
         BasicList<T> output = [];
@@ -302,14 +253,6 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
             }
         }
         return output;
-    }
-    public IBasicList<T> GetRandomList()
-    {
-        return GetRandomList(false, PrivateList.Count);
-    }
-    public IBasicList<T> GetRandomList(bool removePrevious)
-    {
-        return GetRandomList(removePrevious, PrivateList.Count);
     }
     public IBasicList<T> GetRange(int index, int count)
     {
@@ -452,34 +395,7 @@ public class BasicList<T> : IEnumerable<T>, IListModifiers<T>, ICountCollection,
     {
         PrivateList.Reverse();
     }
-    public void ShuffleList()
-    {
-        if (Count == 0)
-        {
-            return;
-        }
-        _rs = RandomHelpers.GetRandomGenerator();
-        BasicList<int> thisList = _rs.GenerateRandomList(PrivateList.Count);
-        List<T> rList = [];
-        foreach (int index in thisList)
-        {
-            rList.Add(PrivateList[index - 1]); //because 0 based.
-        }
-        PrivateList.Clear();
-        PrivateList.AddRange(rList);
-    }
-    public void ShuffleList(int howMany)
-    {
-        _rs = RandomHelpers.GetRandomGenerator();
-        BasicList<int> thisList = _rs.GenerateRandomList(PrivateList.Count, howMany);
-        List<T> rList = [];
-        foreach (int index in thisList)
-        {
-            rList.Add(PrivateList[index - 1]);
-        }
-        PrivateList.Clear();
-        InsertRange(0, rList);
-    }
+    
     public void Sort()
     {
         PrivateList.Sort();

@@ -7,10 +7,6 @@ public static class Lists
     {
         thisDict.Add(thisDict.Count + 1, thisItem); //this is used in cases where we do a dictionary just for the purpose of one based items
     }
-    public static T GetRandomItem<T>(this Dictionary<int, T> thisList)
-    {
-        return thisList.Values.ToBasicList().GetRandomItem();
-    }
     public static HashSet<T> ToHashSet<T>(this IEnumerable<T> TempList)
     {
         return new HashSet<T>(TempList);
@@ -92,10 +88,6 @@ public static class Lists
         ConditionActionPair<T> ThisC = new(match, action, value);
         tempList.Add(ThisC);
         return tempList;
-    }
-    public static void WriteString<T>(this BasicList<T> thisList)
-    {
-        thisList.ForEach(items => Console.WriteLine(items!.ToString()));
     }
     public static bool HasDuplicates<TSource, TKey>(this IBasicList<TSource> source, Func<TSource, TKey> keySelector)
     {

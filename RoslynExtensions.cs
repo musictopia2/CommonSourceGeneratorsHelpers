@@ -362,11 +362,6 @@ public static class RoslynExtensions
         content = content.Replace($"    [{attributeName}]\r\n", "");
         return content;
     }
-    public static void ReportPartialClassRequired(this GeneratorExecutionContext context, ClassDeclarationSyntax clazz, string id = "PartialCode")
-    {
-        string message = $"Partial class was required.  The class name was {clazz.Identifier.Value}";
-        context.ReportDiagnostic(Diagnostic.Create(message.ReportError(id), Location.None));
-    }
     public static void ReportPartialClassRequired(this SourceProductionContext context, ClassDeclarationSyntax clazz, string id = "PartialCode")
     {
         string message = $"Partial class was required.  The class name was {clazz.Identifier.Value}";
@@ -384,11 +379,6 @@ public static class RoslynExtensions
         DiagnosticSeverity.Error,
         true
         );
-
-    public static void ReportError(this GeneratorExecutionContext context, string errorMessgae, string id)
-    {
-        context.ReportDiagnostic(Diagnostic.Create(errorMessgae.ReportError(id), Location.None));
-    }
     public static string GetFileNameForCopy(this SyntaxTree tree) //better be safe than sorry.
     {
         var temps = tree.GetCompilationUnitRoot();

@@ -12,14 +12,6 @@ public interface IBasicList<T> : ISimpleList<T>, IListModifiers<T>
     void RemoveAt(int index);
     void RemoveGivenList(IEnumerable<T> thisList); //this means if you have a list and anything on this list needs to be removed, it can be done.
     void RemoveRange(int index, int count);
-    void ShuffleList(); //i think we can't go wrong with this.   whether i do lots of copy/paste, or find a routine, does not matter.
-    void ShuffleList(int howMany); //this means you only keep a certain number
-    T GetRandomItem();
-    T GetRandomItem(bool removePrevious);
-    void RemoveRandomItems(int howMany);
-    IBasicList<T> GetRandomList(bool removePrevious, int howManyInList);
-    IBasicList<T> GetRandomList();
-    IBasicList<T> GetRandomList(bool removePrevious);
     IBasicList<T> GetConditionalItems(Predicate<T> match); //if you wanted to remove, there is another method that gives you the items and removes.
     void Sort(); //i do want all to have the ability to sort.
                  //that way i can decide whether a behavior does it or if the list does it.
