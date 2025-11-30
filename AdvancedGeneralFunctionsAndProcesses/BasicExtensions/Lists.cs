@@ -1,269 +1,374 @@
-﻿using CommonBasicLibraries.BasicDataSettingsAndProcesses;
+﻿using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.Misc;
+using CommonBasicLibraries.BasicDataSettingsAndProcesses;
 using CommonBasicLibraries.CollectionClasses;
+using System.Collections;
+using static CommonBasicLibraries.BasicDataSettingsAndProcesses.BasicDataFunctions;
 namespace CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.BasicExtensions;
 public static class Lists
 {
-    public static void Add<T>(this Dictionary<int, T> thisDict, T thisItem)
+    extension<T>(Dictionary<int, T> list)
     {
-        thisDict.Add(thisDict.Count + 1, thisItem); //this is used in cases where we do a dictionary just for the purpose of one based items
-    }
-    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> TempList)
-    {
-        return new HashSet<T>(TempList);
-    }
-    public static BasicList<T> ToBasicList<T>(this IEnumerable<T> tempList)
-    {
-        return new BasicList<T>(tempList);
-    }
-    public static BasicList<T> ToCastedList<T>(this IEnumerable<object> tempList) //in this case, you get another list.
-    {
-        return tempList.Cast<T>().ToBasicList();
-    }
-    public static TKey GetKey<TKey, TValue>(this IDictionary<TKey, TValue> thisDict, TValue thisValue)
-    {
-        if (thisDict == null)
+        public void Add(T item)
         {
-            throw new ArgumentNullException(nameof(thisDict));
+            list.Add(list.Count + 1, item);
         }
-        foreach (KeyValuePair<TKey, TValue> thisPair in thisDict)
+    }
+    extension<TKey, TValue>(IDictionary<TKey, TValue> list)
+    {
+        public TKey GetKey(TValue value)
         {
-            if (thisValue!.Equals(thisPair.Value) == true || ReferenceEquals(thisPair.Value, thisValue) == true)
+            foreach (KeyValuePair<TKey, TValue> thisPair in list)
             {
-                return thisPair.Key;
+                if (value!.Equals(thisPair.Value) == true || ReferenceEquals(thisPair.Value, value) == true)
+                {
+                    return thisPair.Key;
+                }
+            }
+            throw new CustomBasicException($"The Value Of {value} Was Not Found In The Dictionary");
+        }
+    }
+    extension<T>(IEnumerable<T> list)
+    {
+        //was going to do as property but not since the ToList was method, i think makes sense to keep as method here too.
+        public BasicList<T> ToBasicList() => [.. list];
+        public int Count
+        {
+            get
+            {
+                if (list is IList c)
+                {
+                    return c.Count;
+                }
+                return list.Count();
             }
         }
-        throw new CustomBasicException($"The Value Of {thisValue} Was Not Found In The Dictionary");
-    }
-    public static void PopulateBlankList(this BasicList<string> thisList, int howMany)
-    {
-        for (int i = 0; i < howMany; i++)
-        {
-            thisList.Add("");
-        }
-    }
-    public static BasicList<string> CastIntegerListToStringList(this BasicList<int> thisList)
-    {
-        BasicList<string> newList = [];
-        thisList.ForEach(x => newList.Add(x.ToString()));
-        return newList;
-    }
-    public static BasicList<int> CastStringListToIntegerList(this BasicList<string> list)
-    {
-        BasicList<int> output = [];
-        foreach (string str in list)
-        {
-            if (int.TryParse(str, out int a) == false)
+        public bool Contains(T value) =>
+            list switch
             {
-                return [];
-            }
-            output.Add(a);
-        }
-        return output;
-    }
-    public static async Task ReconcileStrings<T>(this BasicList<string> sentList, BasicList<T> savedList, Func<T, string> match, Func<string, Task<T>> result)
-    {
-        BasicList<string> tempList = [];
-        savedList.ForEach(items => tempList.Add(match(items)));
-        BasicList<T> removeList = [];
-        BasicList<T> addList = [];
-        tempList.ForEach(items =>
+                null => false,
+                List<T> l => l.Contains(value),
+                BasicList<T> bl => bl.Contains(value),
+                _ => list.Any(item => EqualityComparer<T>.Default.Equals(item, value))
+            };
+        public async Task ForEachAsync(ActionAsync<T> action)
         {
-            if (sentList.Contains(items) == false)
+            switch (list)
             {
-                removeList.Add(savedList[tempList.IndexOf(items)]);
-            }
-        });
-        await sentList.ForEachAsync(async items =>
-        {
-            if (tempList.Contains(items) == false)
-            {
-                addList.Add(await result(items));
-            }
-        });
-        savedList.RemoveGivenList(removeList);
-        savedList.AddRange(addList);
-    }
-    public static BasicList<ConditionActionPair<T>> Append<T>(this BasicList<ConditionActionPair<T>> tempList, Predicate<T> match, Action<T, string> action, string value = "") //if it needs to be something else. rethink
-    {
-        ConditionActionPair<T> ThisC = new(match, action, value);
-        tempList.Add(ThisC);
-        return tempList;
-    }
-    public static bool HasDuplicates<TSource, TKey>(this IBasicList<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        HashSet<TKey> seenKeys = [];
-        foreach (var item in source)
-        {
-            if (seenKeys.Add(keySelector(item)) == false)
-            {
-                return true;
+                case BasicList<T> bl:
+                    await bl.ForEachAsync(action);
+                    break;
+                default:
+                    foreach (var item in list)
+                    {
+                        await action.Invoke(item);
+                    }
+                    break;
             }
         }
-        return false;
-    }
-    public static bool HasOnlyOne<TSource, TKey>(this IBasicList<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        HashSet<TKey> seenKeys = [];
-        if (source.Count == 0)
+        public void ForEach(Action<T> action)
         {
-            return false; //because there are none.
-        }
-        foreach (var item in source)
-        {
-            seenKeys.Add(keySelector(item));
-            if (seenKeys.Count > 1)
+            switch (list)
             {
-                return false;
+                case List<T> l:
+                    l.ForEach(action);
+                    break;
+                case BasicList<T> bl:
+                    bl.ForEach(action);
+                    break;
+                default:
+                    foreach (var item in list)
+                    {
+                        action(item);
+                    }
+                    break;
             }
         }
-        return true;
+        
     }
-    public static IOrderedEnumerable<IGrouping<TKey, TSource>> GroupOrderDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+    extension<T>(IList<T>)
     {
-        return source.GroupBy(keySelector).OrderByDescending(Items => Items.Count());
-    }
-    public static IOrderedEnumerable<IGrouping<TKey, TSource>> GroupOrderAscending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        return source.GroupBy(keySelector).OrderBy(Items => Items.Count());
-    }
-    public static int MaximumDuplicates<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        if (source.Any() == false)
+        public static IList<T> GetBlankList(int howMany)
         {
-            throw new CustomBasicException("There has to be at least one item.  If I am wrong, rethink");
-        }
-        var firstList = source.GroupBy(keySelector).OrderByDescending(Items => Items.Count());
-        return firstList.First().Count();
-    }
-    public static int MaximumDuplicates<TSource>(this IEnumerable<TSource> source)
-    {
-        if (source.Any() == false)
-        {
-            throw new CustomBasicException("There has to be at least one item.  If I am wrong, rethink");
-        }
-        var firstList = source.GroupBy(Items => Items).OrderByDescending(Items => Items.Count());
-        return firstList.First().Count();
-    }
-    public static BasicList<TSource> GetDuplicates<TSource, TKey>(this IBasicList<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        HashSet<TKey> seenKeys = [];
-        BasicList<TSource> output = [];
-        foreach (var item in source)
-        {
-            if (seenKeys.Add(keySelector(item)) == false)
+            BasicList<T> list = [];
+            for (int i = 0; i < howMany; i++)
             {
-                output.Add(item);
+                list.Add(default!);
+            }
+            return list;
+        }
+    }
+    extension<T>(IList<T> list)
+    {
+        public void RemoveGivenList(IEnumerable<T> remove)
+        {
+            if (list is BasicList<T> b)
+            {
+                b.RemoveGivenList(remove);
+                return;
+            }
+            var removeSet = new HashSet<T>(remove);
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (removeSet.Contains(list[i]))
+                {
+                    list.RemoveAt(i);
+                }
             }
         }
-        return output;
-    }
-    public static bool DoesReconcile<TSource, TKey>(this IEnumerable<TSource> source, IEnumerable<TSource> other, Func<TSource, TKey> keySelector)
-    {
-        if (source.Count() != other.Count())
+        public void AddRange(IEnumerable<T> adds)
         {
-            return false; //because not even the same count.
-        }
-        HashSet<TKey> seenKeys = [];
-        foreach (var item in source)
-        {
-            seenKeys.Add(keySelector(item));
-        }
-        foreach (var item in other)
-        {
-            if (seenKeys.Add(keySelector(item)))
+            switch (list)
             {
-                return false;
-            }
-        }
-        return true; //may need to test this idea.
-                     //its case sensitive.  i think its okay since its intended for anything.
-    }
-    public static bool IsIntOrdered<TSource>(this IBasicList<TSource> source, Func<TSource, int?> keySelector, bool ExcludeUnknowns = true)
-    {
-        if (source.Count == 0)
-        {
-            return true; //just act like its in order because there was nothing.
-        }
-        BasicList<int?> list = source.ExtractIntegers(keySelector);
-        int x; //starts at 1
-        x = 0;
-        if (ExcludeUnknowns == true)
-        {
-            list.RemoveAllOnly(Items => Items.HasValue == false);
-        }
-        list.Sort();
-        if (list.First() != 1)
-        {
-            return false; //if the first item is not in order, then its not in order.
-        }
-        foreach (var item in list)
-        {
-            x++;
-            if (item != x)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    //decided to use ienumerable now because sometimes it does not quite implement the custom list but is still needed.
-    public static BasicList<int?> ExtractIntegers<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> keySelector)
-    {
-        BasicList<int?> output = [];
-        foreach (var item in source)
-        {
-            output.Add(keySelector(item));
-        }
-        return output;
-    }
-    public static BasicList<int> ExtractIntegers<TSource>(this IEnumerable<TSource> source, Func<TSource, int> keySelector)
-    {
-        BasicList<int> output = [];
-        foreach (var item in source)
-        {
-            output.Add(keySelector(item));
-        }
-        return output;
-    }
-    public static int DistinctCount<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        int count = 0;
-        HashSet<TKey> seenKeys = [];
-        foreach (TSource element in source)
-        {
-            if (seenKeys.Add(keySelector(element)))
-            {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public static IEnumerable<TSource> DistinctBy<TSource, TKey> //2 choices
-(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-    {
-        HashSet<TKey> seenKeys = [];
-        foreach (TSource element in source)
-        {
-            if (seenKeys.Add(keySelector(element)))
-            {
-                yield return element;
+                case BasicList<T> b:
+                    b.AddRange(adds);
+                    break;
+                case List<T> l:
+                    l.AddRange(adds);
+                    break;
+                default:
+                    foreach (var item in adds)
+                    {
+                        list.Add(item);
+                    }
+                    break;
             }
         }
     }
-    public static BasicList<TKey> DistinctItems<TSource, TKey>
-        (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+    extension<T>(IEnumerable<string> list)
     {
-        HashSet<TKey> seenKeys = [];
-        BasicList<TKey> output = [];
-        foreach (TSource element in source)
+        public async Task ReconcileStringsAsync(IList<T> saved, Func<T, string> match, Func<string, Task<T>> result)
         {
-            if (seenKeys.Add(keySelector(element)))
+            BasicList<string> tempList = [];
+            saved.ForEach(items => tempList.Add(match(items)));
+            BasicList<T> removeList = [];
+            BasicList<T> addList = [];
+            tempList.ForEach(items =>
             {
-                output.Add(keySelector(element));
+                if (list.Contains(items) == false)
+                {
+                    removeList.Add(saved[tempList.IndexOf(items)]);
+                }
+            });
+            await list.ForEachAsync(async items =>
+            {
+                if (tempList.Contains(items) == false)
+                {
+                    addList.Add(await result(items));
+                }
+            });
+            saved.RemoveGivenList(removeList);
+            saved.AddRange(addList);
+        }
+    }
+    extension<T>(IEnumerable<object> list)
+    {
+        public BasicList<T> ToCastedList() => list.Cast<T>().ToBasicList();
+    }
+    extension<T>(IList<ConditionActionPair<T>> list)
+    {
+        public IList<ConditionActionPair<T>> Append(Predicate<T> match, Action<T, string> action, string value)
+        {
+            ConditionActionPair<T> item = new(match, action, value);
+            list.Add(item);
+            return list;
+        }
+    }
+    extension<TSource, TKey>(IEnumerable<TSource> source)
+    {
+        public bool HasDuplicates(Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = [];
+            foreach (var item in source)
+            {
+                if (seenKeys.Add(keySelector(item)) == false)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasOnlyOne(Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = [];
+            if (source.Count == 0)
+            {
+                return false; //because there are none.
+            }
+            foreach (var item in source)
+            {
+                seenKeys.Add(keySelector(item));
+                if (seenKeys.Count > 1)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    extension<TKey, TSource>(IEnumerable<TSource> source)
+    {
+        public IOrderedEnumerable<IGrouping<TKey, TSource>> GroupOrderDescending(Func<TSource, TKey> keySelector)
+        {
+            return source.GroupBy(keySelector).OrderByDescending(Items => Items.Count());
+        }
+        public IOrderedEnumerable<IGrouping<TKey, TSource>> GroupOrderAscending(Func<TSource, TKey> keySelector)
+        {
+            return source.GroupBy(keySelector).OrderBy(Items => Items.Count());
+        }
+    }
+    extension<TSource, TKey>(IEnumerable<TSource> source)
+    {
+        public int MaximumDuplicates(Func<TSource, TKey> keySelector)
+        {
+            if (source.Any() == false)
+            {
+                throw new CustomBasicException("There has to be at least one item.  If I am wrong, rethink");
+            }
+            var firstList = source.GroupBy(keySelector).OrderByDescending(Items => Items.Count());
+            return firstList.First().Count();
+        }
+        public bool DoesReconcile(IEnumerable<TSource> other, Func<TSource, TKey> keySelector)
+        {
+            if (source.Count() != other.Count())
+            {
+                return false; //because not even the same count.
+            }
+            HashSet<TKey> seenKeys = [];
+            foreach (var item in source)
+            {
+                seenKeys.Add(keySelector(item));
+            }
+            foreach (var item in other)
+            {
+                if (seenKeys.Add(keySelector(item)))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public int DistinctCount(Func<TSource, TKey> keySelector)
+        {
+            int count = 0;
+            HashSet<TKey> seenKeys = [];
+            foreach (TSource element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+        public BasicList<TKey> DistinctItems(Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = [];
+            BasicList<TKey> output = [];
+            foreach (TSource element in source)
+            {
+                if (seenKeys.Add(keySelector(element)))
+                {
+                    output.Add(keySelector(element));
+                }
+            }
+            output.Sort();
+            return output;
+        }
+    }
+    extension<TSource>(IEnumerable<TSource> source)
+    {
+        public int MaximumDuplicates
+        {
+            get
+            {
+                if (source.Any() == false)
+                {
+                    throw new CustomBasicException("There has to be at least one item.  If I am wrong, rethink");
+                }
+                var firstList = source.GroupBy(Items => Items).OrderByDescending(Items => Items.Count());
+                return firstList.First().Count();
             }
         }
-        output.Sort();
-        return output;
+        public string Join(string delimiter)
+        {
+            StrCat cats = new();
+            foreach (var item in source)
+            {
+                if (item is null)
+                {
+                    cats.AddToString("", delimiter);
+                }
+                else
+                {
+                    cats.AddToString(item.ToString()!, delimiter);
+                }
+            }
+            return cats.GetInfo();
+        }
+        public BasicList<int?> ExtractIntegers(Func<TSource, int?> keySelector)
+        {
+            BasicList<int?> output = [];
+            foreach (var item in source)
+            {
+                output.Add(keySelector(item));
+            }
+            return output;
+        }
+        public BasicList<int> ExtractIntegers(Func<TSource, int> keySelector)
+        {
+            BasicList<int> output = [];
+            foreach (var item in source)
+            {
+                output.Add(keySelector(item));
+            }
+            return output;
+        }
+    }
+    extension<TSource, TKey>(ICollection<TSource> source)
+    {
+        public BasicList<TSource> GetDuplicates(Func<TSource, TKey> keySelector)
+        {
+            HashSet<TKey> seenKeys = [];
+            BasicList<TSource> output = [];
+            foreach (var item in source)
+            {
+                if (seenKeys.Add(keySelector(item)) == false)
+                {
+                    output.Add(item);
+                }
+            }
+            return output;
+        }
+    }
+    extension<TSource>(IBasicList<TSource> source)
+    {
+        public bool IsIntOrdered(Func<TSource, int?> keySelector, bool excludeUnknowns = true)
+        {
+            if (source.Count == 0)
+            {
+                return true; //just act like its in order because there was nothing.
+            }
+            BasicList<int?> list = source.ExtractIntegers(keySelector);
+            int x; //starts at 1
+            x = 0;
+            if (excludeUnknowns == true)
+            {
+                list.RemoveAllOnly(Items => Items.HasValue == false);
+            }
+            list.Sort();
+            if (list.First() != 1)
+            {
+                return false; //if the first item is not in order, then its not in order.
+            }
+            foreach (var item in list)
+            {
+                x++;
+                if (item != x)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

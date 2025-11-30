@@ -17,9 +17,10 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GenerateHelperLibraries" Version="2.0.5" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all" />
+    <PackageReference Include="GenerateHelperLibraries" Version="2.0.18" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
+    <PackageReference Include="SourceGeneratorsAttributesLibrary" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="C:\VS\OneNet\Apps\CommandLines\PostBuildPackageHandler\bin\Release\net9.0\PostBuildPackageHandler.exe $(ProjectName) $(ProjectDir) $(ProjectFileName) $(TargetDir)" Condition="'$(Configuration)' == 'Release' and '$(RunPostBuildAppCondition)' == 'true'" />
