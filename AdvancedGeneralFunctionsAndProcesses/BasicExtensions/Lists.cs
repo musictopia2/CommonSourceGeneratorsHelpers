@@ -6,6 +6,22 @@ using static CommonBasicLibraries.BasicDataSettingsAndProcesses.BasicDataFunctio
 namespace CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.BasicExtensions;
 public static class Lists
 {
+    extension(BasicList<string> list)
+    {
+        public BasicList<int> CastStringListToIntegerList()
+        {
+            BasicList<int> output = [];
+            foreach (string str in list)
+            {
+                if (int.TryParse(str, out int a) == false)
+                {
+                    return [];
+                }
+                output.Add(a);
+            }
+            return output;
+        }
+    }
     extension<T>(Dictionary<int, T> list)
     {
         public void Add(T item)
