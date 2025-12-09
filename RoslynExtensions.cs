@@ -265,24 +265,58 @@ public static class RoslynExtensions
     }
     public static bool HasAttribute(this ISymbol symbol, string attributeName)
     {
-        if (attributeName.EndsWith("Attribute") == false)
+        if (!attributeName.EndsWith("Attribute"))
         {
-            attributeName = $"{attributeName}Attribute";
+            attributeName += "Attribute";
         }
-        foreach (var attribute in symbol.GetAttributes())
+
+        // Check current symbol first
+        if (HasAttributeDirect(symbol, attributeName))
         {
-            if (attribute.AttributeClass is null)
+            return true;
+        }
+
+        // Walk overridden chain for symbols that support overriding
+        var current = symbol;
+
+        while (true)
+        {
+            current = current switch
             {
-                continue;
+                IPropertySymbol p => p.OverriddenProperty,
+                IMethodSymbol m => m.OverriddenMethod,
+                IEventSymbol e => e.OverriddenEvent,
+                _ => null
+            };
+
+            if (current is null)
+            {
+                break;
             }
-            if (attribute.AttributeClass.Name == attributeName)
+
+            if (HasAttributeDirect(current, attributeName))
             {
                 return true;
             }
         }
-        //trying a faster method.  because this has to be as fast as possible.
+
         return false;
     }
+
+    private static bool HasAttributeDirect(ISymbol symbol, string attributeName)
+    {
+        foreach (var attribute in symbol.GetAttributes())
+        {
+            if (attribute.AttributeClass?.Name == attributeName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /// <summary>
     /// This gets the data of the property.  null means not found.
     /// Can be bool, etc.
