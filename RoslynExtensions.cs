@@ -615,8 +615,25 @@ public static class RoslynExtensions
     {
         IEnumerable<INamedTypeSymbol> symbols;
         symbols = symbol.GetAllParents();
+        // Constructor parameters must be checked before fields.
+        // Primary-constructor parameters can have compiler-generated backing
+        // fields such as <aggregator>P. The parameter symbol has the usable
+        // source name ("aggregator"), while the synthesized field does not.
         foreach (var s in symbols)
         {
+
+            //addon before assuming its null.
+            foreach (IMethodSymbol constructor in s.InstanceConstructors)
+            {
+                foreach (IParameterSymbol parameter in constructor.Parameters)
+                {
+                    if (parameter.Type.Name == typeName)
+                    {
+                        return parameter; //if something is found here, use it and stop.
+                    }
+                }
+            }
+
             var list1 = s.GetMembers().OfType<IPropertySymbol>();
             foreach (var item in list1)
             {
@@ -633,6 +650,7 @@ public static class RoslynExtensions
                     return item;
                 }
             }
+            
         }
         return null;
     }
