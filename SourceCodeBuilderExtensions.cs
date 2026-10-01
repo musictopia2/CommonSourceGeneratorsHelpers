@@ -217,6 +217,28 @@ public static class SourceCodeBuilderExtensions
             })
             .WriteCodeBlock(action.Invoke);
     }
+    public static void StartPartialClass(this SourceCodeStringBuilder builder, ICustomResult result, string genericArguments, Action<ICodeBlock> action)
+    {
+        if (string.IsNullOrWhiteSpace(genericArguments))
+        {
+            builder.StartPartialClass(result, action);
+            return;
+        }
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(result.Namespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class")
+                .Write(result.ClassName)
+                .Write(" ").Write(genericArguments);
+            })
+            .WriteCodeBlock(action.Invoke);
+    }
     public static void StartPartialClass(this SourceCodeStringBuilder builder, INamedTypeSymbol symbol, Action<ICodeBlock> action)
     {
         builder.WriteLine("#nullable enable")
@@ -249,6 +271,29 @@ public static class SourceCodeBuilderExtensions
             {
                 w.Write("public partial class ")
                 .Write(result.ClassName)
+                .Write(implements);
+            })
+            .WriteCodeBlock(content.Invoke);
+    }
+    public static void StartPartialClassImplements(this SourceCodeStringBuilder builder, ICustomResult result, string genericArguments, string implements, Action<ICodeBlock> content) //sometimes, you need to implement something. i think name should be a little different.
+    {
+        if (string.IsNullOrWhiteSpace(genericArguments))
+        {
+            builder.StartPartialClassImplements(result, implements, content);
+            return;
+        }
+        builder.WriteLine("#nullable enable")
+                .WriteLine(w =>
+                {
+                    w.Write("namespace ")
+                    .Write(result.Namespace)
+                    .Write(";");
+                })
+            .WriteLine(w =>
+            {
+                w.Write("public partial class ")
+                .Write(result.ClassName)
+                .Write(" ").Write(genericArguments).Write(" ")
                 .Write(implements);
             })
             .WriteCodeBlock(content.Invoke);

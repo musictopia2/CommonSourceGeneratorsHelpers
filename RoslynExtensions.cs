@@ -605,55 +605,114 @@ public static class RoslynExtensions
             output.Add(temps);
         } while (true);
     }
-    /// <summary>
-    /// this returns the object so i can retrieve the variable name of a given type.  only is expecting one of them to be found.
-    /// </summary>
-    /// <param name="symbol"></param>
-    /// <param name="typeName"></param>
-    /// <returns></returns>
-    public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName) //intending to usually be a class
+    public static string GetVariableNameForType(
+        this ClassDeclarationSyntax node,
+        SemanticModel model,
+        string typeName)
     {
-        IEnumerable<INamedTypeSymbol> symbols;
-        symbols = symbol.GetAllParents();
-        // Constructor parameters must be checked before fields.
-        // Primary-constructor parameters can have compiler-generated backing
-        // fields such as <aggregator>P. The parameter symbol has the usable
-        // source name ("aggregator"), while the synthesized field does not.
-        foreach (var s in symbols)
+        // First priority: primary-constructor parameter.
+        if (node.ParameterList is not null)
         {
+            foreach (ParameterSyntax parameterSyntax in node.ParameterList.Parameters)
+            {
+                IParameterSymbol? parameterSymbol =
+                    model.GetDeclaredSymbol(parameterSyntax);
 
-            //addon before assuming its null.
-            foreach (IMethodSymbol constructor in s.InstanceConstructors)
-            {
-                foreach (IParameterSymbol parameter in constructor.Parameters)
+                if (parameterSymbol is null)
                 {
-                    if (parameter.Type.Name == typeName)
-                    {
-                        return parameter; //if something is found here, use it and stop.
-                    }
+                    continue;
                 }
-            }
 
-            var list1 = s.GetMembers().OfType<IPropertySymbol>();
-            foreach (var item in list1)
-            {
-                if (item.Type.Name == typeName)
+                if (parameterSymbol.Type.Name == typeName)
                 {
-                    return item; //try this way.
+                    return parameterSymbol.Name;
                 }
             }
-            var list2 = s.GetMembers().OfType<IFieldSymbol>();
-            foreach (var item in list2)
-            {
-                if (item.Type.Name == typeName)
-                {
-                    return item;
-                }
-            }
-            
         }
-        return null;
+
+        INamedTypeSymbol? classSymbol = model.GetDeclaredSymbol(node);
+
+        if (classSymbol is null)
+        {
+            return "";
+        }
+
+        // Second priority: explicitly declared field or property.
+        foreach (ISymbol member in classSymbol.GetMembers())
+        {
+            if (member.IsImplicitlyDeclared)
+            {
+                continue;
+            }
+
+            if (member is IFieldSymbol field &&
+                field.Type.Name == typeName)
+            {
+                return field.Name;
+            }
+
+            if (member is IPropertySymbol property &&
+                property.Type.Name == typeName)
+            {
+                return property.Name;
+            }
+        }
+
+        return "";
     }
+
+    //risk not even having old method anymore.
+
+
+    ///// <summary>
+    ///// this returns the object so i can retrieve the variable name of a given type.  only is expecting one of them to be found.
+    ///// </summary>
+    ///// <param name="symbol"></param>
+    ///// <param name="typeName"></param>
+    ///// <returns></returns>
+    //public static ISymbol? GetSymbolOfType(this INamedTypeSymbol symbol, string typeName) //intending to usually be a class
+    //{
+    //    IEnumerable<INamedTypeSymbol> symbols;
+    //    symbols = symbol.GetAllParents();
+    //    // Constructor parameters must be checked before fields.
+    //    // Primary-constructor parameters can have compiler-generated backing
+    //    // fields such as <aggregator>P. The parameter symbol has the usable
+    //    // source name ("aggregator"), while the synthesized field does not.
+    //    foreach (var s in symbols)
+    //    {
+
+    //        //addon before assuming its null.
+    //        foreach (IMethodSymbol constructor in s.InstanceConstructors)
+    //        {
+    //            foreach (IParameterSymbol parameter in constructor.Parameters)
+    //            {
+    //                if (parameter.Type.Name == typeName)
+    //                {
+    //                    return parameter; //if something is found here, use it and stop.
+    //                }
+    //            }
+    //        }
+
+    //        var list1 = s.GetMembers().OfType<IPropertySymbol>();
+    //        foreach (var item in list1)
+    //        {
+    //            if (item.Type.Name == typeName)
+    //            {
+    //                return item; //try this way.
+    //            }
+    //        }
+    //        var list2 = s.GetMembers().OfType<IFieldSymbol>();
+    //        foreach (var item in list2)
+    //        {
+    //            if (item.Type.Name == typeName)
+    //            {
+    //                return item;
+    //            }
+    //        }
+
+    //    }
+    //    return null;
+    //}
     public static BasicList<IPropertySymbol> GetAllPublicProperties(this ITypeSymbol symbol)
     {
         INamedTypeSymbol other = (INamedTypeSymbol)symbol;
