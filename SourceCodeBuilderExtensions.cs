@@ -233,7 +233,7 @@ public static class SourceCodeBuilderExtensions
                 })
             .WriteLine(w =>
             {
-                w.Write("public partial class")
+                w.Write("public partial class ")
                 .Write(result.ClassName)
                 .Write(" ").Write(genericArguments);
             })
