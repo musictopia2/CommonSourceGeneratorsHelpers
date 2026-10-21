@@ -12,6 +12,9 @@ public static class Strings
             return output;
         }
 
+        public BasicList<string> SplitLines => payLoad.Split(["\r\n", "\n", "\r"], StringSplitOptions.None)
+        .ToBasicList();
+
         //private static string _monthReplace = "";
         public BasicList<string> CommaDelimitedList()
         {
